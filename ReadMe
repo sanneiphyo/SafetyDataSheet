@@ -1,3 +1,35 @@
 make sure to change DefaultConnection in appseeting.json
-(Night) me I also change to HeaderId , HeaderHId, HeaderHDID to 
-    thoset Id to HeaderNo , HeaderHNo, HeaderHDNo etc ...
+(Night) me I also change to HeaderId , HeaderHId, HeaderHDID to
+thoset Id to HeaderNo , HeaderHNo, HeaderHDNo etc ...
+
+if u are using visual studio 2022 just look for the video of how to generate those files there are videos on youtube
+
+    if u are using vscode use those commands to make crud file
+
+    dotnet aspnet-codegenerator controller -name ProductsController -m Product -dc SdsDbContext --relativeFolderPath Controllers
+
+--useDefaultLayout --referenceScriptLibraries
+
+/// this is what happened after i run the command
+Building project ...
+Finding the generator 'controller'...
+Running the generator 'controller'...
+
+Minimal hosting scenario!
+Attempting to figure out the EntityFramework metadata for the model and DbContext: 'Product'
+
+Using database provider 'Microsoft.EntityFrameworkCore.SqlServer'!
+
+Added Controller : '\Controllers\ProductsController.cs'.
+Added View : \Views\Products\Create.cshtml
+Added View : \Views\Products\Edit.cshtml
+Added View : \Views\Products\Details.cshtml
+Added View : \Views\Products\Delete.cshtml
+Added View : \Views\Products\Index.cshtml
+RunTime 00:00:08.96
+
+// U can access the page by going to http://localhost:5000/Products or
+
+      Just go to the Shared file than go to _Layout.cshtml and add the link to the navbar
+
+that is based project template we will be fixing it later
