@@ -28,7 +28,7 @@ node_modules/
 .env
 
 # Publish Output
-wwwroot/
+
 wwwroot/uploads/
 
 # Temporary Files
