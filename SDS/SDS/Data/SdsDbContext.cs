@@ -16,6 +16,7 @@ public class SdsDbContext : DbContext
     public DbSet<HeadersH> HeadersH { get; set; }
     public DbSet<HeadersHD> HeadersHD { get; set; }
     public DbSet<HeadersData> HeadersData { get; set; }
+    public DbSet<HeaderHImage> HeaderHImages { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<HeadersH>()
