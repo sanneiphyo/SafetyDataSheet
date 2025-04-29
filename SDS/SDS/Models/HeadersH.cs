@@ -24,11 +24,3 @@ public class HeadersH
 
 }
 
-// id integer [primary key]
-//   header_h_id varchar
-//   header_h_name varchar(200)
-//   header_id nvarchar(50)
-//   created_date datetime
-//   created_by nvarchar(50)
-//   updated_date datetime
-//   updated_by ncarchar(50

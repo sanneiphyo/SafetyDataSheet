@@ -26,12 +26,3 @@ public class HeadersHD
     public bool IsDeleted { get; set; }
 
 }
-
-// id integer [primary key]
-//   header_d_id varchar
-//   header_d_name varchar(200)
-//   header_h_id nvarchar(50)
-//   created_date datetime
-//   created_by nvarchar(50)
-//   updated_date datetime
-//   updated_by ncarchar(50)
