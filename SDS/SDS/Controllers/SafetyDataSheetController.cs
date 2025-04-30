@@ -46,20 +46,16 @@ namespace SDS.Controllers
         {
             try
             {
-                // First clear existing entries for this document (if needed)
-                // _context.SDSContents.Where(...).Delete();
-
-                // Add all new entries
-                foreach (var item in items)
-                {
-                    var sdsContent = new SDSContent
-                    {
-                        HeadersHDId = item.ContentID,
-                        Content = item.Content,
-                       // ProductId auto generate (example =>P00001)
-                    };
-                    _context.SdsDbContext.Add(sdsContent);
-                }
+                //foreach (var item in items)
+                //{
+                //    var sdsContent = new SDSContent
+                //    {
+                //        HeadersHDId = item.ContentID,
+                //        Content = item.Content,
+                //       // ProductId auto generate (example =>P00001)
+                //    };
+                //    _context.SdsDbContext.Add(sdsContent);
+                //}
 
                 await _context.SaveChangesAsync();
                 return Json(new { success = true });
