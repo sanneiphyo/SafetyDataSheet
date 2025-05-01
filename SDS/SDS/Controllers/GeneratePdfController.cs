@@ -13,5 +13,12 @@ namespace SDS.Controllers
             return View();
         }
 
+        [HttpGet("productTable")]
+        public ActionResult ProductTableView()
+        {
+            return View("ProductTableDesign");
+        }
+
+
     }
 }
