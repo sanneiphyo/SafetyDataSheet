@@ -19,6 +19,10 @@ namespace SDS.Controllers
             return View("ProductTableDesign");
         }
 
-
+        [HttpGet("aidMeasurement")]
+        public ActionResult AidMeasurementView()
+        {
+            return View("AidMeasurementDesign");
+        }
     }
 }
