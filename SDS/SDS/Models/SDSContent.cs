@@ -1,12 +1,13 @@
 ﻿using System;
 
 namespace SDS.Models;
+
 public class SDSContent
 {
     public int Id { get; set; }
-    public string Content { get; set; } // Data content
+    public string Content { get; set; } //  Input Data content
 
-    public string ContentID { get; set; } // Data content
+    public string ContentID { get; set; } // Header Data content
 
     public string? HeadersHId { get; set; } // Foreign key to HeadersH table (nullable)
 
