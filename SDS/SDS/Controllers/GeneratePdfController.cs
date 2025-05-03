@@ -23,6 +23,12 @@ namespace SDS.Controllers
             _antiforgery = antiforgery;
 
         }
+        
+        [HttpGet("productTable")]
+        public ActionResult ProductTableView()
+        {
+            return View("ProductTableDesign");
+        }
 
         [HttpGet("")]
         // GET: GeneratePdfController
@@ -274,5 +280,10 @@ namespace SDS.Controllers
             return viewModel;
         }
         #endregion
+
+       
+
+
+
     }
 }
