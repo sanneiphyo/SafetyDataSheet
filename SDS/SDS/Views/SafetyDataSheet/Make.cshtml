@@ -1,8 +1,8 @@
 ﻿@model SdsViewModel
 @{
-    ViewData["Title"] = "Create Safety Data Sheet";
+    var isEdit = ViewBag.IsEdit ?? false;
+    ViewData["Title"] = isEdit ? "Edit Safety Data Sheet" : "Create Safety Data Sheet";
 }
-
 
 <div class="container-fluid mt-4">
     <div class="row">
@@ -34,9 +34,9 @@
         <!-- Main Content Area -->
         <div class="col-md-9 col-lg-10 ms-auto p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>Create Safety Data Sheet</h1>
+                <h1>@ViewData["Title"]</h1>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-primary" type="button" id="saveButton">Save</button>
+                    <button class="btn btn-primary" type="button" id="saveButton">@(isEdit ? "Update" : "Save")</button>
                     <button class="btn btn-outline-secondary" type="button" id="cancelButton">Cancel</button>
                 </div>
             </div>
@@ -44,7 +44,10 @@
             <form id="sdsForm">
                 <!-- Anti-forgery token -->
                 <input type="hidden" id="csrfToken" value="@ViewData["CSRFToken"]" />
-
+                @if (ViewBag.IsEdit)
+                {
+                    <input type="hidden" asp-for="ProductId" />
+                }
                 <!-- Product Image Section -->
                 <div class="card mb-4" id="section-product">
                     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
@@ -60,10 +63,12 @@
                                     <div class="mb-3">
                                         <label for="productName" class="form-label">Product Name</label>
                                         <textarea class="form-control" id="productName"></textarea>
+                                        <span asp-validation-for="ProductName" class="text-danger"></span>
                                     </div>
                                     <div class="mb-3">
                                         <label for="productCode" class="form-label">Product Code</label>
                                         <input type="text" class="form-control" id="productCode" />
+                                        <span asp-validation-for="ProductCode" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -1380,8 +1385,10 @@
     <script>
         // Global object to store all Quill editors
         const quillEditors = {};
-        
-        document.addEventListener('DOMContentLoaded', function () {
+             // Get model data as JSON (safe for JavaScript)
+        const modelData = @Html.Raw(Json.Serialize(Model));
+
+        document.addEventListener('DOMContentLoaded', function() {
             // List of specific input fields that should have rich text editing
             const richTextInputs = [
                 // Section 1: Identification
@@ -1427,7 +1434,7 @@
                 // Section 16: Other Information
                 'otherInformation'
             ];
-            
+
             // Initialize Quill for each rich text input
             richTextInputs.forEach(inputId => {
                 const element = document.getElementById(inputId);
@@ -1437,13 +1444,13 @@
                     quillContainer.id = `${inputId}-editor`;
                     quillContainer.style.height = '200px';
                     quillContainer.style.marginBottom = '20px';
-                    
+
                     // Insert the container before the textarea
                     element.parentNode.insertBefore(quillContainer, element);
-                    
+
                     // Hide the original textarea
                     element.style.display = 'none';
-                    
+
                     // Initialize Quill
                     const quill = new Quill(`#${inputId}-editor`, {
                         theme: 'snow',
@@ -1459,18 +1466,23 @@
                         },
                         placeholder: 'Enter content here...'
                     });
-                    
-                    // Set initial content if available
-                    if (element.value) {
-                        quill.clipboard.dangerouslyPasteHTML(element.value);
+
+                    // NEW: Set initial content from model data if available, otherwise use element value
+                    const initialContent = (modelData && modelData[inputId])
+                        ? modelData[inputId]
+                        : element.value;
+
+                    if (initialContent) {
+                        quill.clipboard.dangerouslyPasteHTML(initialContent);
                     }
-                    
+
                     // Store the Quill instance for later use
-                    quillEditors[inputId] = quill;
+                    window.quillEditors = window.quillEditors || {};
+                    window.quillEditors[inputId] = quill;
                 }
             });
-            
-            // Also initialize Quill for any regular textareas
+
+            // Initialize Quill for any regular textareas not in richTextInputs
             const textareas = document.querySelectorAll('textarea');
             textareas.forEach(textarea => {
                 if (!richTextInputs.includes(textarea.id)) {
@@ -1479,13 +1491,13 @@
                     quillContainer.id = `${textarea.id}-editor`;
                     quillContainer.style.height = '200px';
                     quillContainer.style.marginBottom = '20px';
-                    
+
                     // Insert the container before the textarea
                     textarea.parentNode.insertBefore(quillContainer, textarea);
-                    
+
                     // Hide the original textarea
                     textarea.style.display = 'none';
-                    
+
                     // Initialize Quill
                     const quill = new Quill(`#${textarea.id}-editor`, {
                         theme: 'snow',
@@ -1501,14 +1513,19 @@
                         },
                         placeholder: 'Enter content here...'
                     });
-                    
-                    // Set initial content if available
-                    if (textarea.value) {
-                        quill.clipboard.dangerouslyPasteHTML(textarea.value);
+
+                    // NEW: Set initial content from model data if available, otherwise use element value
+                    const initialContent = (modelData && modelData[textarea.id])
+                        ? modelData[textarea.id]
+                        : textarea.value;
+
+                    if (initialContent) {
+                        quill.clipboard.dangerouslyPasteHTML(initialContent);
                     }
-                    
+
                     // Store the Quill instance for later use
-                    quillEditors[textarea.id] = quill;
+                    window.quillEditors = window.quillEditors || {};
+                    window.quillEditors[textarea.id] = quill;
                 }
             });
         });
@@ -1653,8 +1670,11 @@
         // Save button click handler
         document.getElementById('saveButton').addEventListener('click', function () {
             // Collect all form data
+                 const isEdit = @Json.Serialize(isEdit);
+        const productId = @Json.Serialize(Model?.ProductId);
             const formData = {
                 // Section 1: Identification
+                productId: isEdit ? productId : null,
                 productName: getQuillContent('productName'),
                 productCode: getQuillContent('productCode'),
                 biologicalDefinition: getQuillContent('biologicalDefinition'),
@@ -1758,8 +1778,10 @@
                     environmentalHazardsImage: imageData.environmentalHazards
                 }
             };
-            
+
             // Send data to server
+
+            // fetch(`/SafetyDataSheet/${endpoint}`, {
             fetch('/SafetyDataSheet/save', {
                 method: 'POST',
                 headers: {
