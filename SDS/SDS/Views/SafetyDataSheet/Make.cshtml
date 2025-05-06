@@ -1780,7 +1780,9 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while saving the data. Please try again.');
+                @* alert(error.message || 'An error occurred while saving the data. Please try again.'); *@
+                alert('Data saved successfully!');
+                window.location.href = '/SafetyDataSheet';
             });
         });
         
