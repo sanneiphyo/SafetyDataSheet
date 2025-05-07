@@ -27,14 +27,23 @@ namespace SDS.Controllers
             _logger = logger;
         }
 
-        [HttpGet("")]
-        public IActionResult Index()
+        [HttpGet("Index")]
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var products = await _context.Products
+                .Select(p => new ProductViewModel
+                {
+                    ProductNo = p.ProductNo,
+                    ProductCode = p.ProductCode,
+                    ProductName = p.ProductName,
+
+                }).ToListAsync();
+
+            return View(products);
         }
 
         [HttpGet("Create")]
-        public async Task<IActionResult> Create(string productId = null)
+        public async Task<IActionResult> Create(string id = null)
         {
             // Get the CSRF tokens for the current request
             var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
@@ -42,10 +51,10 @@ namespace SDS.Controllers
 
             var model = new SdsViewModel();
 
-            if (!string.IsNullOrEmpty(productId))
+            if (!string.IsNullOrEmpty(id))
             {
                 // Edit mode - load existing data
-                model = await GetSdsViewModelByProductIdAsync(productId);
+                model = await GetSdsViewModelByProductIdAsync(id);
                 ViewBag.IsEdit = true;
             }
             else
@@ -55,6 +64,38 @@ namespace SDS.Controllers
             }
 
             return View("Make", model); // ← make sure model is passed to the view
+        }
+
+        // GET: SafetyDataSheet/Delete/
+        public async Task<IActionResult> Delete(string? id)
+        {
+            if (id == null)
+                return BadRequest();
+
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.ProductNo == id);
+
+            if (product == null)
+                return NotFound();
+
+            return View(product); // Show confirmation page
+        }
+
+        // POST: SafetyDataSheet/Delete/
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.ProductNo == id);
+
+            if (product == null)
+                return NotFound();
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
 

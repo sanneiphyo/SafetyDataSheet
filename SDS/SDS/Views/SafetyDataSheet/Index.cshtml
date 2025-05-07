@@ -1,9 +1,47 @@
-﻿@{
-    ViewData["Title"] = "Safety Data Sheet Index";
+﻿@model IEnumerable<SDS.Models.ProductViewModel>
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Product List";
 }
 
-<h1>@ViewData["Title"]</h1>
-<p>Welcome to the Safety Data Sheet management system. Use the navigation menu to explore.</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Product List</h2>
+    <div>
+        <a asp-controller="SafetyDataSheet" asp-action="Create" class="btn btn-primary me-2">New Product</a>
 
+    </div>
+</div>
 
-<a class="nav-link text-dark" asp-area="" asp-controller="SafetyDataSheet" asp-action="Create">Create</a>
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No products found.</div>
+}
+else
+{
+    <table class="table table-bordered table-hover shadow-sm">
+        <thead class="table-light">
+            <tr>
+
+                <th>Code</th>
+                <th>Name</th>
+                <th>Actions</th> <!-- Added missing header -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ProductNo</td>
+                    <td>@item.ProductCode</td>
+                    <td>@item.ProductName</td>
+                    <td>
+                        <a asp-action="Create" asp-route-id="@item.ProductNo" class="btn btn-sm btn-primary me-1">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.ProductNo" class="btn btn-sm btn-danger me-1">Delete</a>
+                        <a asp-action="ExportPdf" asp-route-id="@item.ProductNo" class="btn btn-sm btn-warning">Generate PDF</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
