@@ -24,11 +24,11 @@ namespace SDS.Controllers
 
         }
         
-        [HttpGet("productTable")]
-        public ActionResult ProductTableView()
-        {
-            return View("ProductTableDesign");
-        }
+        //[HttpGet("productTable")]
+        //public ActionResult ProductTableView()
+        //{
+        //    return View("ProductTableDesign");
+        //}
 
         [HttpGet("")]
         // GET: GeneratePdfController
