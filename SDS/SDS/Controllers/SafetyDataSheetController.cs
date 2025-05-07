@@ -127,12 +127,17 @@ namespace SDS.Controllers
         //     }
         // }
 
-        //cody
-        [HttpPost]
+        [HttpPost("save")]
         public async Task<IActionResult> Save([FromBody] SdsViewModel viewModel)
         {
             try
             {
+                // Validate required fields
+                if (string.IsNullOrWhiteSpace(viewModel.ProductCode))
+                {
+                    return BadRequest(new { success = false, message = "Product code is required." });
+                }
+
                 // Determine if this is an update or create
                 bool isUpdate = !string.IsNullOrEmpty(viewModel.ProductId);
 
@@ -140,46 +145,48 @@ namespace SDS.Controllers
 
                 try
                 {
-                    // PRODUCT VALIDATION AND ID GENERATION
+                    // PRODUCT VALIDATION
                     var normalizedProductCode = NormalizeText(viewModel.ProductCode);
-                    var existingProduct = await _context.Products
-                        .FirstOrDefaultAsync(p => NormalizeText(p.ProductCode) == normalizedProductCode);
+                    var productsWithSameCode = await _context.Products
+                        .Where(p => p.ProductCode.Trim().ToLower() == normalizedProductCode.Trim().ToLower())
+                        .ToListAsync();
 
                     if (isUpdate)
                     {
                         // UPDATE LOGIC
-                        var product = await _context.Products
+                        var productToUpdate = await _context.Products
                             .FirstOrDefaultAsync(p => p.ProductNo == viewModel.ProductId);
 
-                        if (product == null)
+                        if (productToUpdate == null)
                         {
                             return NotFound(new { success = false, message = "Product not found" });
                         }
 
-                        // Check for duplicate product code (excluding current product)
-                        if (existingProduct != null && existingProduct.ProductNo != viewModel.ProductId)
+                        // Check if another product already has this code
+                        var conflictingProduct = productsWithSameCode.FirstOrDefault(p => p.ProductNo != viewModel.ProductId);
+                        if (conflictingProduct != null)
                         {
-                            return BadRequest(new { success = false, message = "Product code already exists!" });
+                            return BadRequest(new { success = false, message = "Product code already exists for another product!" });
                         }
 
                         // Update existing product
-                        product.ProductName = viewModel.ProductName;
-                        product.ProductCode = viewModel.ProductCode;
-                        product.UpdatedAt = DateTime.Now;
+                        productToUpdate.ProductName = viewModel.ProductName;
+                        productToUpdate.ProductCode = viewModel.ProductCode;
+                        productToUpdate.UpdatedAt = DateTime.Now;
                     }
                     else
                     {
                         // CREATE LOGIC
-                        if (existingProduct != null)
+                        if (productsWithSameCode.Any())
                         {
-                            return BadRequest(new { success = false, message = "Product already exists!" });
+                            return BadRequest(new { success = false, message = "Product with this code already exists!" });
                         }
 
                         var productId = await GenerateProductIdAsync();
                         viewModel.ProductId = productId;
 
                         // Create new product
-                        var product = new Product
+                        var newProduct = new Product
                         {
                             ProductCode = viewModel.ProductCode,
                             ProductNo = productId,
@@ -188,13 +195,13 @@ namespace SDS.Controllers
                             UpdatedAt = DateTime.Now,
                             IsDeleted = false
                         };
-                        _context.Products.Add(product);
+                        _context.Products.Add(newProduct);
                     }
 
                     // SDS CONTENT HANDLING (same for both create and update)
-                    // First remove existing content if updating
                     if (isUpdate)
                     {
+                        // Remove existing content if updating
                         var existingContents = await _context.SDSContents
                             .Where(c => c.ProductId == viewModel.ProductId)
                             .ToListAsync();
@@ -224,7 +231,7 @@ namespace SDS.Controllers
 
                     _logger.LogInformation($"SDS data {(isUpdate ? "updated" : "saved")} successfully for ProductId: {viewModel.ProductId}");
 
-                    return Json(new
+                    return Ok(new
                     {
                         success = true,
                         message = $"Data {(isUpdate ? "updated" : "saved")} successfully.",
@@ -235,7 +242,11 @@ namespace SDS.Controllers
                 {
                     await transaction.RollbackAsync();
                     _logger.LogError(ex, $"Error {(isUpdate ? "updating" : "saving")} SDS data: {ex.Message}");
-                    throw;
+                    return StatusCode(500, new
+                    {
+                        success = false,
+                        message = $"An error occurred while {(isUpdate ? "updating" : "saving")} the data."
+                    });
                 }
             }
             catch (Exception ex)
@@ -248,7 +259,6 @@ namespace SDS.Controllers
                 });
             }
         }
-
 
         public class SDSContentItem
         {
