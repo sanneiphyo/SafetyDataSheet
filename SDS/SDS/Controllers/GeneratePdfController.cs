@@ -281,9 +281,10 @@ namespace SDS.Controllers
         }
         #endregion
 
-       
-
-
-
+        [HttpGet("aidMeasurement")]
+        public ActionResult AidMeasurementView()
+        {
+            return View("AidMeasurementDesign");
+        }
     }
 }
