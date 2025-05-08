@@ -1,14 +1,17 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SDS.Models
 {
-    public class SdsViewModel
+    public class SdsModel
     {
         public int Id { get; set; }
         public string? ProductId { get; set; }
         // Section 1: Identification
-        public string? ProductCode { get; set; }
-        public string? ProductName { get; set; }
+        public string ProductCode { get; set; }
+        public string ProductName { get; set; }
         public string? ProductImage { get; set; }
         public string? BiologicalDefinition { get; set; }
         public string? InciName { get; set; }
@@ -127,6 +130,8 @@ namespace SDS.Models
         public string? RevNo { get; set; } // new
 
         // New property to hold images for each ContentID
-        public Dictionary<string, List<HeaderHImage>> ImagesByContentID { get; set; } = new Dictionary<string, List<HeaderHImage>>();
+        // public Dictionary<string, List<HeaderHImage>> ImagesByContentID { get; set; } = new Dictionary<string, List<HeaderHImage>>();
+        // public virtual ICollection<HeaderHImage> Images { get; set; }
     }
+
 }
