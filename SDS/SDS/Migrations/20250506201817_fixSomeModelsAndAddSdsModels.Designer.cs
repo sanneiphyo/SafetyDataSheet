@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SDS.Data;
 
@@ -11,9 +12,11 @@ using SDS.Data;
 namespace SDS.Migrations
 {
     [DbContext(typeof(SdsDbContext))]
-    partial class SdsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250506201817_fixSomeModelsAndAddSdsModels")]
+    partial class fixSomeModelsAndAddSdsModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,7 +60,12 @@ namespace SDS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SdsModelId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SdsModelId");
 
                     b.ToTable("HeaderHImages");
                 });
@@ -454,6 +462,18 @@ namespace SDS.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SdsModels");
+                });
+
+            modelBuilder.Entity("SDS.Models.HeaderHImage", b =>
+                {
+                    b.HasOne("SDS.Models.SdsModel", null)
+                        .WithMany("Images")
+                        .HasForeignKey("SdsModelId");
+                });
+
+            modelBuilder.Entity("SDS.Models.SdsModel", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

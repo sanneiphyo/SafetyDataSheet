@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SDS.Data;
-using SDS.Models; // For HTML parsing 
+using SDS.Models;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using SDS.Helpers; // For HTML parsing 
+
 
 namespace SDS.Controllers
 {
@@ -98,85 +100,31 @@ namespace SDS.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
-
-        // [HttpPost("save")]
-        // public async Task<IActionResult> Save([FromBody] List<SDSContentItem> items)
-        // {
-        //     try
-        //     {
-        //         foreach (var item in items)
-        //         {
-        //             var sdsContent = new SDSContent
-        //             {
-        //                 // HeadersHDId = item.ContentID,
-        //                 // Content = item.Content,
-
-        //                 // // Auto-generate ProductId (example => P00001)
-        //                 // ProductId = await GenerateProductIdAsync()
-        //                 Content = item.Content,
-        //                 ContentID = item.ContentID,    // <-- don’t forget this or you’ll get NULL
-        //                 HeadersHId = item.HeadersHId.ToString(),
-        //                 HeadersHDId = item.HeadersHDId.ToString(),
-        //                 ProductId = await GenerateProductIdAsync()
-        //             };
-        //             _context.Add(sdsContent);
-        //         }
-
-        //         await _context.SaveChangesAsync();
-        //         return Json(new { success = true });
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return Json(new { success = false, message = ex.Message });
-        //     }
-        // }
-
-        //copilot
-        // [HttpPost("save")]
-        // public async Task<IActionResult> Save([FromBody] SdsViewModel viewModel)
-        // {
-        //     try
-        //     {
-        //         // Step 1: Generate a new ProductId
-        //         var productId = await GenerateProductIdAsync();
-
-        //         // Step 2: Map and save SDSContent
-        //         var sdsContents = MapFromViewModelToSDSContent(viewModel, productId);
-        //         if (sdsContents.Any())
-        //         {
-        //             _context.SDSContents.AddRange(sdsContents);
-        //         }
-
-        //         // Step 3: Map and save HeaderHImage
-        //         var headerHImages = MapFromViewModelToHeaderHImage(viewModel, productId);
-        //         if (headerHImages.Any())
-        //         {
-        //             _context.HeaderHImages.AddRange(headerHImages);
-        //         }
-
-        //         // Step 4: Save changes to the database
-        //         await _context.SaveChangesAsync();
-
-        //         // Return success response with the generated ProductId
-        //         return Json(new { success = true, message = "Data saved successfully.", productId });
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         // Return error response in case of an exception
-        //         return Json(new { success = false, message = ex.Message });
-        //     }
-        // }
-
         [HttpPost("save")]
         public async Task<IActionResult> Save([FromBody] SdsViewModel viewModel)
         {
             try
             {
-                // Validate required fields
-                if (string.IsNullOrWhiteSpace(viewModel.ProductCode))
+
+                if (string.IsNullOrEmpty(viewModel.ProductCode) && string.IsNullOrEmpty(viewModel.ProductName))
                 {
-                    return BadRequest(new { success = false, message = "Product code is required." });
+                    return BadRequest(new { success = false, message = "Product Code or Product Name is required." });
+                }
+
+                var products = await _context.Products.ToListAsync();
+
+                var normalizedProductCode = NormalizeText(viewModel.ProductCode);
+                var normalizeProductName = NormalizeText(viewModel.ProductName);
+                
+                var existingProduct = products.FirstOrDefault(p => NormalizeText(p.ProductCode) == normalizedProductCode);
+                
+                if (existingProduct != null)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Product already exists!"
+                    });
                 }
 
                 // Determine if this is an update or create
@@ -186,8 +134,8 @@ namespace SDS.Controllers
 
                 try
                 {
-                    // PRODUCT VALIDATION
-                    var normalizedProductCode = NormalizeText(viewModel.ProductCode);
+
+       
                     var productsWithSameCode = await _context.Products
                         .Where(p => p.ProductCode.Trim().ToLower() == normalizedProductCode.Trim().ToLower())
                         .ToListAsync();
@@ -224,20 +172,37 @@ namespace SDS.Controllers
                         }
 
                         var productId = await GenerateProductIdAsync();
-                        viewModel.ProductId = productId;
+//                         viewModel.ProductId = productId;
 
-                        // Create new product
-                        var newProduct = new Product
+//                         // Create new product
+//                         var newProduct = new Product
+//                         {
+//                             ProductCode = viewModel.ProductCode,
+//                             ProductNo = productId,
+//                             ProductName = viewModel.ProductName,
+//                             CreatedAt = DateTime.Now,
+//                             UpdatedAt = DateTime.Now,
+//                             IsDeleted = false
+//                         };
+//                         _context.Products.Add(newProduct);
+                    
+
+//                         var sdsContents = MapFromViewModelToSDSContent(viewModel, productId);
+//                         var headerHImages = MapFromViewModelToHeaderHImage(viewModel, productId);
+
+                        var product = new Product
                         {
-                            ProductCode = viewModel.ProductCode,
+                            ProductCode = normalizedProductCode,
                             ProductNo = productId,
-                            ProductName = viewModel.ProductName,
+                            ProductName = normalizeProductName,
                             CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            UpdatedAt = null,
+                            DeletedAt = null,
                             IsDeleted = false
                         };
-                        _context.Products.Add(newProduct);
+                        _context.Products.Add(product);
                     }
+
 
                     // SDS CONTENT HANDLING (same for both create and update)
                     if (isUpdate)
@@ -261,11 +226,19 @@ namespace SDS.Controllers
                         _context.SDSContents.AddRange(sdsContents);
                     }
 
+
                     var headerHImages = MapFromViewModelToHeaderHImage(viewModel, viewModel.ProductId);
                     if (headerHImages.Any())
                     {
                         _context.HeaderHImages.AddRange(headerHImages);
                     }
+
+                    // reopen if u want the database to horizontal 
+                    // var sdsModel = SdsMapper.MapToSdsModel(viewModel);
+                    // sdsModel.ProductId = productId;
+                    // // sdsModel.ProductName = normalizeProductName;
+                    // // sdsModel.ProductCode = normalizedProductCode;
+                    // _context.SdsModels.Add(sdsModel);
 
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
@@ -301,13 +274,16 @@ namespace SDS.Controllers
             }
         }
 
-        public class SDSContentItem
-        {
-            public string ContentID { get; set; }
-            public string Content { get; set; }
-            public int HeadersHId { get; set; }
-            public int HeadersHDId { get; set; }
-        }
+
+
+        // public class SDSContentItem
+        // {
+        //     public string ContentID { get; set; }
+        //     public string Content { get; set; }
+        //     public int HeadersHId { get; set; }
+        //     public int HeadersHDId { get; set; }
+        // }
+
 
         [HttpGet("Error")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -318,6 +294,18 @@ namespace SDS.Controllers
 
 
         #region Private Methods
+        private bool IsImageFile(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return false;
+            }
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".webp" };
+            var fileExtension = Path.GetExtension(fileName)?.ToLowerInvariant();
+            return allowedExtensions.Contains(fileExtension);
+        }
+
         private string NormalizeText(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -331,6 +319,7 @@ namespace SDS.Controllers
         private List<HeaderHImage> MapFromViewModelToHeaderHImage(SdsViewModel viewModel, string productId)
         {
             var headerHImages = new List<HeaderHImage>();
+            const int MaxImageSize = 5 * 1024 * 1024; // 5MB
 
             if (viewModel.ImagesByContentID == null || !viewModel.ImagesByContentID.Any())
             {
@@ -352,10 +341,16 @@ namespace SDS.Controllers
 
                 foreach (var image in images)
                 {
-                    if (image == null || image.ImageData == null || image.ImageData.Length == 0 || !IsImageFile(image.ImageName))
+                    if (image == null ||
+                        image.ImageData == null ||
+                        image.ImageData.Length == 0 ||
+                        !IsImageFile(image.ImageName) ||
+                        image.ImageData.Length > MaxImageSize)
                     {
                         continue;
                     }
+
+                    string base64Image = Convert.ToBase64String(image.ImageData);
 
                     headerHImages.Add(new HeaderHImage
                     {
@@ -364,6 +359,8 @@ namespace SDS.Controllers
                         ImageName = image.ImageName ?? "unnamed",
                         ContentType = image.ContentType ?? "application/octet-stream",
                         ImageData = image.ImageData,
+                        Base64Image = base64Image,
+
                         Order = Math.Max(1, Math.Min(5, image.Order))
                     });
                 }
@@ -410,6 +407,8 @@ namespace SDS.Controllers
             AddIfNotEmpty("signalWord", viewModel.SignalWord);
             AddIfNotEmpty("containsInfo", viewModel.ContainsInfo);
             AddIfNotEmpty("hazardStatements", viewModel.HazardStatements);
+            AddIfNotEmpty("precautionary", viewModel.Precautionary); // new
+            AddIfNotEmpty("supplementary", viewModel.Supplementary); // new
             AddIfNotEmpty("otherHazards", viewModel.OtherHazards);
 
             // Section 3: Composition
@@ -440,6 +439,7 @@ namespace SDS.Controllers
             AddIfNotEmpty("specificEndUses", viewModel.SpecificEndUses);
 
             // Section 8: Exposure Controls/Personal Protection
+            AddIfNotEmpty("controlParameters", viewModel.ControlParameters); // new
             AddIfNotEmpty("protectiveEquipmentImage", viewModel.ProtectiveEquipmentImage);
             AddIfNotEmpty("processConditions", viewModel.ProcessConditions);
             AddIfNotEmpty("engineeringMeasures", viewModel.EngineeringMeasures);
@@ -476,6 +476,18 @@ namespace SDS.Controllers
 
             // Section 11: Toxicological Information
             AddIfNotEmpty("toxicologicalEffects", viewModel.ToxicologicalEffects);
+            AddIfNotEmpty("acuteToxicity", viewModel.AcuteToxicity); // new
+            AddIfNotEmpty("skinCorrosion", viewModel.SkinCorrosion); // new
+            AddIfNotEmpty("eyeDamage", viewModel.EyeDamage); // new
+            AddIfNotEmpty("skinSensitization", viewModel.SkinSensitization); // new
+            AddIfNotEmpty("germCell", viewModel.GermCell); // new
+            AddIfNotEmpty("carcinogenicity", viewModel.Carcinogenicity); // new
+            AddIfNotEmpty("reproductiveToxicity", viewModel.ReproductiveToxicity); // new
+            AddIfNotEmpty("singleExposure", viewModel.SingleExposure); // new
+            AddIfNotEmpty("repeatedExposure", viewModel.RepeatedExposure); // new
+            AddIfNotEmpty("aspirationHazard", viewModel.AspirationHazard); // new
+            AddIfNotEmpty("photoToxicity", viewModel.PhotoToxicity); // new
+            AddIfNotEmpty("otherInfo", viewModel.OtherInfo); // new
 
             // Section 12: Ecological Information
             AddIfNotEmpty("ecoToxicity", viewModel.EcoToxicity);
@@ -496,6 +508,9 @@ namespace SDS.Controllers
             AddIfNotEmpty("hazardClass", viewModel.HazardClass);
             AddIfNotEmpty("packingGroup", viewModel.PackingGroup);
             AddIfNotEmpty("environmentalHazards", viewModel.EnvironmentalHazards);
+            AddIfNotEmpty("specialPrecautions", viewModel.SpecialPrecautions); // new
+            AddIfNotEmpty("bulkTranprt", viewModel.BulkTranprt); // new
+            AddIfNotEmpty("ibcCode", viewModel.IbcCode); // new
 
             // Section 15: Regulatory Information
             AddIfNotEmpty("safetyRegulations", viewModel.SafetyRegulations);
@@ -503,6 +518,10 @@ namespace SDS.Controllers
 
             // Section 16: Other Information
             AddIfNotEmpty("otherInformation", viewModel.OtherInformation);
+            AddIfNotEmpty("precautionaryStatements", viewModel.PrecautionaryStatements); // new
+            AddIfNotEmpty("revisionDate", viewModel.RevisionDate?.ToString("yyyy-MM-dd")); // new
+            AddIfNotEmpty("revisionReason", viewModel.RevisionReason); // new
+            AddIfNotEmpty("revNo", viewModel.RevNo);  // new
 
             return sdsContents;
         }
@@ -538,232 +557,221 @@ namespace SDS.Controllers
         #endregion
 
 
-        #region public mehods
-        public SdsViewModel MapFromSDSContentToViewModel(List<SDSContent> sdsContents)
-        {
-            var viewModel = new SdsViewModel();
+        // #region public mehods
+        // public SdsViewModel MapFromSDSContentToViewModel(List<SDSContent> sdsContents)
+        // {
+        //     var viewModel = new SdsViewModel();
 
-            if (sdsContents == null || !sdsContents.Any())
-            {
-                return viewModel;
-            }
+        //     if (sdsContents == null || !sdsContents.Any())
+        //     {
+        //         return viewModel;
+        //     }
 
-            // Extract ProductId from the first content item (should be the same for all)
-            viewModel.ProductId = sdsContents.FirstOrDefault()?.ProductId;
+        //     // Extract ProductId from the first content item (should be the same for all)
+        //     viewModel.ProductId = sdsContents.FirstOrDefault()?.ProductId;
 
-            // Helper method to reduce repetition
-            void SetPropertyIfExists(string contentId, Action<string> setter)
-            {
-                var content = sdsContents.FirstOrDefault(c => c.ContentID == contentId)?.Content;
-                if (!string.IsNullOrEmpty(content))
-                {
-                    setter(content);
-                }
-            }
+        //     // Helper method to reduce repetition
+        //     void SetPropertyIfExists(string contentId, Action<string> setter)
+        //     {
+        //         var content = sdsContents.FirstOrDefault(c => c.ContentID == contentId)?.Content;
+        //         if (!string.IsNullOrEmpty(content))
+        //         {
+        //             setter(content);
+        //         }
+        //     }
 
-            // Section 1: Identification
-            SetPropertyIfExists("productCode", value => viewModel.ProductCode = value);
-            SetPropertyIfExists("productName", value => viewModel.ProductName = value);
-            SetPropertyIfExists("productImage", value => viewModel.ProductImage = value);
-            SetPropertyIfExists("biologicalDefinition", value => viewModel.BiologicalDefinition = value);
-            SetPropertyIfExists("inciName", value => viewModel.InciName = value);
-            SetPropertyIfExists("casNumber", value => viewModel.CasNumber = value);
-            SetPropertyIfExists("femaNumber", value => viewModel.FemaNumber = value);
-            SetPropertyIfExists("einecsNumber", value => viewModel.EinecsNumber = value);
-            SetPropertyIfExists("identifiedUses", value => viewModel.IdentifiedUses = value);
-            SetPropertyIfExists("supplierDetails", value => viewModel.SupplierDetails = value);
-            SetPropertyIfExists("emergencyPhone", value => viewModel.EmergencyPhone = value);
+        //     // Section 1: Identification
+        //     SetPropertyIfExists("productCode", value => viewModel.ProductCode = value);
+        //     SetPropertyIfExists("productName", value => viewModel.ProductName = value);
+        //     SetPropertyIfExists("productImage", value => viewModel.ProductImage = value);
+        //     SetPropertyIfExists("biologicalDefinition", value => viewModel.BiologicalDefinition = value);
+        //     SetPropertyIfExists("inciName", value => viewModel.InciName = value);
+        //     SetPropertyIfExists("casNumber", value => viewModel.CasNumber = value);
+        //     SetPropertyIfExists("femaNumber", value => viewModel.FemaNumber = value);
+        //     SetPropertyIfExists("einecsNumber", value => viewModel.EinecsNumber = value);
+        //     SetPropertyIfExists("identifiedUses", value => viewModel.IdentifiedUses = value);
+        //     SetPropertyIfExists("supplierDetails", value => viewModel.SupplierDetails = value);
+        //     SetPropertyIfExists("emergencyPhone", value => viewModel.EmergencyPhone = value);
 
-            // Section 2: Hazard Identification
-            SetPropertyIfExists("classificationContent", value => viewModel.ClassificationContent = value);
-            SetPropertyIfExists("labelContent", value => viewModel.LabelContent = value);
-            SetPropertyIfExists("signalWord", value => viewModel.SignalWord = value);
-            SetPropertyIfExists("containsInfo", value => viewModel.ContainsInfo = value);
-            SetPropertyIfExists("hazardStatements", value => viewModel.HazardStatements = value);
-            SetPropertyIfExists("otherHazards", value => viewModel.OtherHazards = value);
+        //     // Section 2: Hazard Identification
+        //     SetPropertyIfExists("classificationContent", value => viewModel.ClassificationContent = value);
+        //     SetPropertyIfExists("labelContent", value => viewModel.LabelContent = value);
+        //     SetPropertyIfExists("signalWord", value => viewModel.SignalWord = value);
+        //     SetPropertyIfExists("containsInfo", value => viewModel.ContainsInfo = value);
+        //     SetPropertyIfExists("hazardStatements", value => viewModel.HazardStatements = value);
+        //     SetPropertyIfExists("otherHazards", value => viewModel.OtherHazards = value);
 
-            // Section 3: Composition
-            SetPropertyIfExists("substancesContent", value => viewModel.SubstancesContent = value);
+        //     // Section 3: Composition
+        //     SetPropertyIfExists("substancesContent", value => viewModel.SubstancesContent = value);
 
-            // Section 4: First Aid
-            SetPropertyIfExists("inhalationFirstAid", value => viewModel.InhalationFirstAid = value);
-            SetPropertyIfExists("ingestionFirstAid", value => viewModel.IngestionFirstAid = value);
-            SetPropertyIfExists("skinContactFirstAid", value => viewModel.SkinContactFirstAid = value);
-            SetPropertyIfExists("eyeContactFirstAid", value => viewModel.EyeContactFirstAid = value);
-            SetPropertyIfExists("symptomsEffects", value => viewModel.SymptomsEffects = value);
-            SetPropertyIfExists("medicalAttention", value => viewModel.MedicalAttention = value);
+        //     // Section 4: First Aid
+        //     SetPropertyIfExists("inhalationFirstAid", value => viewModel.InhalationFirstAid = value);
+        //     SetPropertyIfExists("ingestionFirstAid", value => viewModel.IngestionFirstAid = value);
+        //     SetPropertyIfExists("skinContactFirstAid", value => viewModel.SkinContactFirstAid = value);
+        //     SetPropertyIfExists("eyeContactFirstAid", value => viewModel.EyeContactFirstAid = value);
+        //     SetPropertyIfExists("symptomsEffects", value => viewModel.SymptomsEffects = value);
+        //     SetPropertyIfExists("medicalAttention", value => viewModel.MedicalAttention = value);
 
-            // Section 5: Firefighting
-            SetPropertyIfExists("extinguishingMediaContent", value => viewModel.ExtinguishingMediaContent = value);
-            SetPropertyIfExists("specialHazardsContent", value => viewModel.SpecialHazardsContent = value);
-            SetPropertyIfExists("firefighterAdviceContent", value => viewModel.FirefighterAdviceContent = value);
+        //     // Section 5: Firefighting
+        //     SetPropertyIfExists("extinguishingMediaContent", value => viewModel.ExtinguishingMediaContent = value);
+        //     SetPropertyIfExists("specialHazardsContent", value => viewModel.SpecialHazardsContent = value);
+        //     SetPropertyIfExists("firefighterAdviceContent", value => viewModel.FirefighterAdviceContent = value);
 
-            // Section 6: Accidental Release
-            SetPropertyIfExists("personalPrecautions", value => viewModel.PersonalPrecautions = value);
-            SetPropertyIfExists("environmentalPrecautions", value => viewModel.EnvironmentalPrecautions = value);
-            SetPropertyIfExists("containmentMethods", value => viewModel.ContainmentMethods = value);
-            SetPropertyIfExists("sectionReferences", value => viewModel.SectionReferences = value);
+        //     // Section 6: Accidental Release
+        //     SetPropertyIfExists("personalPrecautions", value => viewModel.PersonalPrecautions = value);
+        //     SetPropertyIfExists("environmentalPrecautions", value => viewModel.EnvironmentalPrecautions = value);
+        //     SetPropertyIfExists("containmentMethods", value => viewModel.ContainmentMethods = value);
+        //     SetPropertyIfExists("sectionReferences", value => viewModel.SectionReferences = value);
 
-            // Section 7: Handling and Storage
-            SetPropertyIfExists("safeHandlingPrecautions", value => viewModel.SafeHandlingPrecautions = value);
-            SetPropertyIfExists("safeStorageConditions", value => viewModel.SafeStorageConditions = value);
-            SetPropertyIfExists("specificEndUses", value => viewModel.SpecificEndUses = value);
+        //     // Section 7: Handling and Storage
+        //     SetPropertyIfExists("safeHandlingPrecautions", value => viewModel.SafeHandlingPrecautions = value);
+        //     SetPropertyIfExists("safeStorageConditions", value => viewModel.SafeStorageConditions = value);
+        //     SetPropertyIfExists("specificEndUses", value => viewModel.SpecificEndUses = value);
 
-            // Section 8: Exposure Controls/Personal Protection
-            SetPropertyIfExists("protectiveEquipmentImage", value => viewModel.ProtectiveEquipmentImage = value);
-            SetPropertyIfExists("processConditions", value => viewModel.ProcessConditions = value);
-            SetPropertyIfExists("engineeringMeasures", value => viewModel.EngineeringMeasures = value);
-            SetPropertyIfExists("respiratoryEquipment", value => viewModel.RespiratoryEquipment = value);
-            SetPropertyIfExists("handProtection", value => viewModel.HandProtection = value);
-            SetPropertyIfExists("eyeProtection", value => viewModel.EyeProtection = value);
-            SetPropertyIfExists("otherProtection", value => viewModel.OtherProtection = value);
-            SetPropertyIfExists("hygieneMeasures", value => viewModel.HygieneMeasures = value);
-            SetPropertyIfExists("personalProtection", value => viewModel.PersonalProtection = value);
-            SetPropertyIfExists("skinProtection", value => viewModel.SkinProtection = value);
-            SetPropertyIfExists("environmentalExposure", value => viewModel.EnvironmentalExposure = value);
+        //     // Section 8: Exposure Controls/Personal Protection
+        //     SetPropertyIfExists("protectiveEquipmentImage", value => viewModel.ProtectiveEquipmentImage = value);
+        //     SetPropertyIfExists("processConditions", value => viewModel.ProcessConditions = value);
+        //     SetPropertyIfExists("engineeringMeasures", value => viewModel.EngineeringMeasures = value);
+        //     SetPropertyIfExists("respiratoryEquipment", value => viewModel.RespiratoryEquipment = value);
+        //     SetPropertyIfExists("handProtection", value => viewModel.HandProtection = value);
+        //     SetPropertyIfExists("eyeProtection", value => viewModel.EyeProtection = value);
+        //     SetPropertyIfExists("otherProtection", value => viewModel.OtherProtection = value);
+        //     SetPropertyIfExists("hygieneMeasures", value => viewModel.HygieneMeasures = value);
+        //     SetPropertyIfExists("personalProtection", value => viewModel.PersonalProtection = value);
+        //     SetPropertyIfExists("skinProtection", value => viewModel.SkinProtection = value);
+        //     SetPropertyIfExists("environmentalExposure", value => viewModel.EnvironmentalExposure = value);
 
-            // Section 9: Physical and Chemical Properties
-            SetPropertyIfExists("appearance", value => viewModel.Appearance = value);
-            SetPropertyIfExists("colour", value => viewModel.Colour = value);
-            SetPropertyIfExists("odour", value => viewModel.Odour = value);
-            SetPropertyIfExists("relativeDensity", value => viewModel.RelativeDensity = value);
-            SetPropertyIfExists("flashPoint", value => viewModel.FlashPoint = value);
-            SetPropertyIfExists("meltingPoint", value => viewModel.MeltingPoint = value);
-            SetPropertyIfExists("refractiveIndex", value => viewModel.RefractiveIndex = value);
-            SetPropertyIfExists("boilingPoint", value => viewModel.BoilingPoint = value);
-            SetPropertyIfExists("vapourPressure", value => viewModel.VapourPressure = value);
-            SetPropertyIfExists("solubilityInWater", value => viewModel.SolubilityInWater = value);
-            SetPropertyIfExists("autoIgnitionTemp", value => viewModel.AutoIgnitionTemp = value);
-            SetPropertyIfExists("otherChemicalInfo", value => viewModel.OtherChemicalInfo = value);
+        //     // Section 9: Physical and Chemical Properties
+        //     SetPropertyIfExists("appearance", value => viewModel.Appearance = value);
+        //     SetPropertyIfExists("colour", value => viewModel.Colour = value);
+        //     SetPropertyIfExists("odour", value => viewModel.Odour = value);
+        //     SetPropertyIfExists("relativeDensity", value => viewModel.RelativeDensity = value);
+        //     SetPropertyIfExists("flashPoint", value => viewModel.FlashPoint = value);
+        //     SetPropertyIfExists("meltingPoint", value => viewModel.MeltingPoint = value);
+        //     SetPropertyIfExists("refractiveIndex", value => viewModel.RefractiveIndex = value);
+        //     SetPropertyIfExists("boilingPoint", value => viewModel.BoilingPoint = value);
+        //     SetPropertyIfExists("vapourPressure", value => viewModel.VapourPressure = value);
+        //     SetPropertyIfExists("solubilityInWater", value => viewModel.SolubilityInWater = value);
+        //     SetPropertyIfExists("autoIgnitionTemp", value => viewModel.AutoIgnitionTemp = value);
+        //     SetPropertyIfExists("otherChemicalInfo", value => viewModel.OtherChemicalInfo = value);
 
-            // Section 10: Stability and Reactivity
-            SetPropertyIfExists("reactivityInfo", value => viewModel.ReactivityInfo = value);
-            SetPropertyIfExists("chemicalStability", value => viewModel.ChemicalStability = value);
-            SetPropertyIfExists("hazardousReactions", value => viewModel.HazardousReactions = value);
-            SetPropertyIfExists("conditionsToAvoid", value => viewModel.ConditionsToAvoid = value);
-            SetPropertyIfExists("incompatibleMaterials", value => viewModel.IncompatibleMaterials = value);
-            SetPropertyIfExists("hazardousDecomposition", value => viewModel.HazardousDecomposition = value);
+        //     // Section 10: Stability and Reactivity
+        //     SetPropertyIfExists("reactivityInfo", value => viewModel.ReactivityInfo = value);
+        //     SetPropertyIfExists("chemicalStability", value => viewModel.ChemicalStability = value);
+        //     SetPropertyIfExists("hazardousReactions", value => viewModel.HazardousReactions = value);
+        //     SetPropertyIfExists("conditionsToAvoid", value => viewModel.ConditionsToAvoid = value);
+        //     SetPropertyIfExists("incompatibleMaterials", value => viewModel.IncompatibleMaterials = value);
+        //     SetPropertyIfExists("hazardousDecomposition", value => viewModel.HazardousDecomposition = value);
 
-            // Section 11: Toxicological Information
-            SetPropertyIfExists("toxicologicalEffects", value => viewModel.ToxicologicalEffects = value);
+        //     // Section 11: Toxicological Information
+        //     SetPropertyIfExists("toxicologicalEffects", value => viewModel.ToxicologicalEffects = value);
 
-            // Section 12: Ecological Information
-            SetPropertyIfExists("ecoToxicity", value => viewModel.EcoToxicity = value);
-            SetPropertyIfExists("persistenceDegradability", value => viewModel.PersistenceDegradability = value);
-            SetPropertyIfExists("bioaccumulationPotential", value => viewModel.BioaccumulationPotential = value);
-            SetPropertyIfExists("soilMobility", value => viewModel.SoilMobility = value);
-            SetPropertyIfExists("pbtAssessment", value => viewModel.PbtAssessment = value);
-            SetPropertyIfExists("otherAdverseEffects", value => viewModel.OtherAdverseEffects = value);
+        //     // Section 12: Ecological Information
+        //     SetPropertyIfExists("ecoToxicity", value => viewModel.EcoToxicity = value);
+        //     SetPropertyIfExists("persistenceDegradability", value => viewModel.PersistenceDegradability = value);
+        //     SetPropertyIfExists("bioaccumulationPotential", value => viewModel.BioaccumulationPotential = value);
+        //     SetPropertyIfExists("soilMobility", value => viewModel.SoilMobility = value);
+        //     SetPropertyIfExists("pbtAssessment", value => viewModel.PbtAssessment = value);
+        //     SetPropertyIfExists("otherAdverseEffects", value => viewModel.OtherAdverseEffects = value);
 
-            // Section 13: Disposal Considerations
-            SetPropertyIfExists("wasteTreatmentMethod", value => viewModel.WasteTreatmentMethod = value);
+        //     // Section 13: Disposal Considerations
+        //     SetPropertyIfExists("wasteTreatmentMethod", value => viewModel.WasteTreatmentMethod = value);
 
-            // Section 14: Transport Information
-            SetPropertyIfExists("unRoad", value => viewModel.UnRoad = value);
-            SetPropertyIfExists("unSea", value => viewModel.UnSea = value);
-            SetPropertyIfExists("unAir", value => viewModel.UnAir = value);
-            SetPropertyIfExists("shippingName", value => viewModel.ShippingName = value);
-            SetPropertyIfExists("hazardClass", value => viewModel.HazardClass = value);
-            SetPropertyIfExists("packingGroup", value => viewModel.PackingGroup = value);
-            SetPropertyIfExists("environmentalHazards", value => viewModel.EnvironmentalHazards = value);
+        //     // Section 14: Transport Information
+        //     SetPropertyIfExists("unRoad", value => viewModel.UnRoad = value);
+        //     SetPropertyIfExists("unSea", value => viewModel.UnSea = value);
+        //     SetPropertyIfExists("unAir", value => viewModel.UnAir = value);
+        //     SetPropertyIfExists("shippingName", value => viewModel.ShippingName = value);
+        //     SetPropertyIfExists("hazardClass", value => viewModel.HazardClass = value);
+        //     SetPropertyIfExists("packingGroup", value => viewModel.PackingGroup = value);
+        //     SetPropertyIfExists("environmentalHazards", value => viewModel.EnvironmentalHazards = value);
 
-            // Section 15: Regulatory Information
-            SetPropertyIfExists("safetyRegulations", value => viewModel.SafetyRegulations = value);
-            SetPropertyIfExists("chemicalSafetyAssessment", value => viewModel.ChemicalSafetyAssessment = value);
+        //     // Section 15: Regulatory Information
+        //     SetPropertyIfExists("safetyRegulations", value => viewModel.SafetyRegulations = value);
+        //     SetPropertyIfExists("chemicalSafetyAssessment", value => viewModel.ChemicalSafetyAssessment = value);
 
-            // Section 16: Other Information
-            SetPropertyIfExists("otherInformation", value => viewModel.OtherInformation = value);
+        //     // Section 16: Other Information
+        //     SetPropertyIfExists("otherInformation", value => viewModel.OtherInformation = value);
 
-            return viewModel;
-        }
+        //     return viewModel;
+        // }
 
-        public void MapFromHeaderHImageToViewModel(List<HeaderHImage> headerHImages, SdsViewModel viewModel)
-        {
-            if (headerHImages == null || !headerHImages.Any())
-            {
-                return;
-            }
+        // public void MapFromHeaderHImageToViewModel(List<HeaderHImage> headerHImages, SdsViewModel viewModel)
+        // {
+        //     if (headerHImages == null || !headerHImages.Any())
+        //     {
+        //         return;
+        //     }
 
-            // Group images by ContentID
-            var imagesByContentId = headerHImages.GroupBy(img => img.ContentID);
+        //     // Group images by ContentID
+        //     var imagesByContentId = headerHImages.GroupBy(img => img.ContentID);
 
-            foreach (var group in imagesByContentId)
-            {
-                string contentId = group.Key;
+        //     foreach (var group in imagesByContentId)
+        //     {
+        //         string contentId = group.Key;
 
-                // Skip if contentId is null or empty
-                if (string.IsNullOrEmpty(contentId))
-                {
-                    continue;
-                }
+        //         // Skip if contentId is null or empty
+        //         if (string.IsNullOrEmpty(contentId))
+        //         {
+        //             continue;
+        //         }
 
-                // Create a list for this contentId if it doesn't exist
-                if (!viewModel.ImagesByContentID.ContainsKey(contentId))
-                {
-                    viewModel.ImagesByContentID[contentId] = new List<HeaderHImage>();
-                }
+        //         // Create a list for this contentId if it doesn't exist
+        //         if (!viewModel.ImagesByContentID.ContainsKey(contentId))
+        //         {
+        //             viewModel.ImagesByContentID[contentId] = new List<HeaderHImage>();
+        //         }
 
-                // Add each image to the appropriate list, ordered by the Order property
-                foreach (var image in group.OrderBy(img => img.Order))
-                {
-                    viewModel.ImagesByContentID[contentId].Add(new HeaderHImage
-                    {
-                        Id = image.Id,
-                        ContentID = image.ContentID,
-                        ProductId = image.ProductId,
-                        ImageName = image.ImageName,
-                        ContentType = image.ContentType,
-                        ImageData = image.ImageData,
-                        Order = image.Order
-                    });
-                }
-            }
-        }
+        //         // Add each image to the appropriate list, ordered by the Order property
+        //         foreach (var image in group.OrderBy(img => img.Order))
+        //         {
+        //             viewModel.ImagesByContentID[contentId].Add(new HeaderHImage
+        //             {
+        //                 Id = image.Id,
+        //                 ContentID = image.ContentID,
+        //                 ProductId = image.ProductId,
+        //                 ImageName = image.ImageName,
+        //                 ContentType = image.ContentType,
+        //                 ImageData = image.ImageData,
+        //                 Base64Image = image.Base64Image,
+        //                 Order = image.Order
+        //             });
+        //         }
+        //     }
+        // }
 
-        public async Task<SdsViewModel> GetSdsViewModelByProductIdAsync(string productId)
-        {
-            // Retrieve all SDSContent items for this ProductId
-            var sdsContents = await _context.SDSContents
-                .Where(c => c.ProductId == productId)
-                .ToListAsync();
+        // public async Task<SdsViewModel> GetSdsViewModelByProductIdAsync(string productId)
+        // {
+        //     // Retrieve all SDSContent items for this ProductId
+        //     var sdsContents = await _context.SDSContents
+        //         .Where(c => c.ProductId == productId)
+        //         .ToListAsync();
 
-            // Map SDSContent items to the ViewModel
-            var viewModel = MapFromSDSContentToViewModel(sdsContents);
+        //     // Map SDSContent items to the ViewModel
+        //     var viewModel = MapFromSDSContentToViewModel(sdsContents);
 
-            // Retrieve all HeaderHImage items for this ProductId
-            var headerHImages = await _context.HeaderHImages
-                .Where(img => img.ProductId == productId)
-                .ToListAsync();
+        //     // Retrieve all HeaderHImage items for this ProductId
+        //     var headerHImages = await _context.HeaderHImages
+        //         .Where(img => img.ProductId == productId)
+        //         .ToListAsync();
 
-            // Map HeaderHImage items to the ViewModel
-            MapFromHeaderHImageToViewModel(headerHImages, viewModel);
+        //     // Map HeaderHImage items to the ViewModel
+        //     MapFromHeaderHImageToViewModel(headerHImages, viewModel);
 
-            // Retrieve product information if needed
-            var product = await _context.Products
-                .FirstOrDefaultAsync(p => p.ProductNo == productId);
+        //     // Retrieve product information if needed
+        //     var product = await _context.Products
+        //         .FirstOrDefaultAsync(p => p.ProductNo == productId);
 
-            if (product != null)
-            {
-                // Update any additional product-specific properties if needed
-                viewModel.ProductCode = product.ProductCode;
-                viewModel.ProductName = product.ProductName;
-            }
+        //     if (product != null)
+        //     {
+        //         // Update any additional product-specific properties if needed
+        //         viewModel.ProductCode = product.ProductCode;
+        //         viewModel.ProductName = product.ProductName;
+        //     }
 
-            return viewModel;
-        }
-
-        private bool IsImageFile(string fileName)
-        {
-            if (string.IsNullOrEmpty(fileName))
-            {
-                return false;
-            }
-
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".webp" };
-            var fileExtension = Path.GetExtension(fileName)?.ToLowerInvariant();
-            return allowedExtensions.Contains(fileExtension);
-        }
-        #endregion
+        //     return viewModel;
+        // }
+        // #endregion
 
     }
 
