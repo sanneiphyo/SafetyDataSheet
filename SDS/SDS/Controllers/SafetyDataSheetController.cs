@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using SDS.Data;
+using SDS.Models;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using SDS.Data;
-using Microsoft.EntityFrameworkCore;
-using SDS.Models;
 using SDS.Helpers; // For HTML parsing 
+
 
 namespace SDS.Controllers
 {
@@ -28,37 +29,83 @@ namespace SDS.Controllers
             _logger = logger;
         }
 
-        [HttpGet("")]
-        public IActionResult Index()
+        [HttpGet("Index")]
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var products = await _context.Products
+                .Select(p => new ProductViewModel
+                {
+                    ProductNo = p.ProductNo,
+                    ProductCode = p.ProductCode,
+                    ProductName = p.ProductName,
+
+                }).ToListAsync();
+
+            return View(products);
         }
 
         [HttpGet("Create")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create(string id = null)
         {
             // Get the CSRF tokens for the current request
             var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
-
-            // Pass the CSRF token to the view using ViewData
             ViewData["CSRFToken"] = tokens.RequestToken;
 
-            return View("Make");
-            // return View("Date");
+            var model = new SdsViewModel();
+
+            if (!string.IsNullOrEmpty(id))
+            {
+                // Edit mode - load existing data
+                model = await GetSdsViewModelByProductIdAsync(id);
+                ViewBag.IsEdit = true;
+            }
+            else
+            {
+                // Create mode
+                ViewBag.IsEdit = false;
+            }
+
+            return View("Make", model); // ← make sure model is passed to the view
         }
 
-        //cody
+        // GET: SafetyDataSheet/Delete/
+        public async Task<IActionResult> Delete(string? id)
+        {
+            if (id == null)
+                return BadRequest();
+
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.ProductNo == id);
+
+            if (product == null)
+                return NotFound();
+
+            return View(product); // Show confirmation page
+        }
+
+        // POST: SafetyDataSheet/Delete/
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.ProductNo == id);
+
+            if (product == null)
+                return NotFound();
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
         [HttpPost("save")]
         public async Task<IActionResult> Save([FromBody] SdsViewModel viewModel)
         {
-            // // Validate the model
-            // if (!ModelState.IsValid)
-            // {
-            //     return BadRequest(new { success = false, message = "Invalid data", errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
-            // }
-
             try
             {
+
                 if (string.IsNullOrEmpty(viewModel.ProductCode) && string.IsNullOrEmpty(viewModel.ProductName))
                 {
                     return BadRequest(new { success = false, message = "Product Code or Product Name is required." });
@@ -68,7 +115,9 @@ namespace SDS.Controllers
 
                 var normalizedProductCode = NormalizeText(viewModel.ProductCode);
                 var normalizeProductName = NormalizeText(viewModel.ProductName);
+                
                 var existingProduct = products.FirstOrDefault(p => NormalizeText(p.ProductCode) == normalizedProductCode);
+                
                 if (existingProduct != null)
                 {
                     return BadRequest(new
@@ -77,32 +126,108 @@ namespace SDS.Controllers
                         message = "Product already exists!"
                     });
                 }
-                var productId = await GenerateProductIdAsync();
+
+                // Determine if this is an update or create
+                bool isUpdate = !string.IsNullOrEmpty(viewModel.ProductId);
 
                 using var transaction = await _context.Database.BeginTransactionAsync();
 
                 try
                 {
-                    var sdsContents = MapFromViewModelToSDSContent(viewModel, productId);
-                    var headerHImages = MapFromViewModelToHeaderHImage(viewModel, productId);
 
-                    var product = new Product
+       
+                    var productsWithSameCode = await _context.Products
+                        .Where(p => p.ProductCode.Trim().ToLower() == normalizedProductCode.Trim().ToLower())
+                        .ToListAsync();
+
+                    if (isUpdate)
                     {
-                        ProductCode = normalizedProductCode,
-                        ProductNo = productId,
-                        ProductName = normalizeProductName,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = null,
-                        DeletedAt = null,
-                        IsDeleted = false
-                    };
-                    _context.Products.Add(product);
+                        // UPDATE LOGIC
+                        var productToUpdate = await _context.Products
+                            .FirstOrDefaultAsync(p => p.ProductNo == viewModel.ProductId);
 
+                        if (productToUpdate == null)
+                        {
+                            return NotFound(new { success = false, message = "Product not found" });
+                        }
+
+                        // Check if another product already has this code
+                        var conflictingProduct = productsWithSameCode.FirstOrDefault(p => p.ProductNo != viewModel.ProductId);
+                        if (conflictingProduct != null)
+                        {
+                            return BadRequest(new { success = false, message = "Product code already exists for another product!" });
+                        }
+
+                        // Update existing product
+                        productToUpdate.ProductName = viewModel.ProductName;
+                        productToUpdate.ProductCode = viewModel.ProductCode;
+                        productToUpdate.UpdatedAt = DateTime.Now;
+                    }
+                    else
+                    {
+                        // CREATE LOGIC
+                        if (productsWithSameCode.Any())
+                        {
+                            return BadRequest(new { success = false, message = "Product with this code already exists!" });
+                        }
+
+                        var productId = await GenerateProductIdAsync();
+//                         viewModel.ProductId = productId;
+
+//                         // Create new product
+//                         var newProduct = new Product
+//                         {
+//                             ProductCode = viewModel.ProductCode,
+//                             ProductNo = productId,
+//                             ProductName = viewModel.ProductName,
+//                             CreatedAt = DateTime.Now,
+//                             UpdatedAt = DateTime.Now,
+//                             IsDeleted = false
+//                         };
+//                         _context.Products.Add(newProduct);
+                    
+
+//                         var sdsContents = MapFromViewModelToSDSContent(viewModel, productId);
+//                         var headerHImages = MapFromViewModelToHeaderHImage(viewModel, productId);
+
+                        var product = new Product
+                        {
+                            ProductCode = normalizedProductCode,
+                            ProductNo = productId,
+                            ProductName = normalizeProductName,
+                            CreatedAt = DateTime.Now,
+                            UpdatedAt = null,
+                            DeletedAt = null,
+                            IsDeleted = false
+                        };
+                        _context.Products.Add(product);
+                    }
+
+
+                    // SDS CONTENT HANDLING (same for both create and update)
+                    if (isUpdate)
+                    {
+                        // Remove existing content if updating
+                        var existingContents = await _context.SDSContents
+                            .Where(c => c.ProductId == viewModel.ProductId)
+                            .ToListAsync();
+                        _context.SDSContents.RemoveRange(existingContents);
+
+                        var existingImages = await _context.HeaderHImages
+                            .Where(i => i.ProductId == viewModel.ProductId)
+                            .ToListAsync();
+                        _context.HeaderHImages.RemoveRange(existingImages);
+                    }
+
+                    // Add new content
+                    var sdsContents = MapFromViewModelToSDSContent(viewModel, viewModel.ProductId);
                     if (sdsContents.Any())
                     {
                         _context.SDSContents.AddRange(sdsContents);
                     }
 
+
+                    var headerHImages = MapFromViewModelToHeaderHImage(viewModel, viewModel.ProductId);
                     if (headerHImages.Any())
                     {
                         _context.HeaderHImages.AddRange(headerHImages);
@@ -118,29 +243,37 @@ namespace SDS.Controllers
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    _logger.LogInformation($"SDS data saved successfully for ProductId: {productId}");
+                    _logger.LogInformation($"SDS data {(isUpdate ? "updated" : "saved")} successfully for ProductId: {viewModel.ProductId}");
 
-                    return Json(new { success = true, message = "Data saved successfully.", productId });
+                    return Ok(new
+                    {
+                        success = true,
+                        message = $"Data {(isUpdate ? "updated" : "saved")} successfully.",
+                        productId = viewModel.ProductId
+                    });
                 }
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    throw;
+                    _logger.LogError(ex, $"Error {(isUpdate ? "updating" : "saving")} SDS data: {ex.Message}");
+                    return StatusCode(500, new
+                    {
+                        success = false,
+                        message = $"An error occurred while {(isUpdate ? "updating" : "saving")} the data."
+                    });
                 }
             }
             catch (Exception ex)
             {
-
-                _logger.LogError(ex, $"Error saving SDS data: {ex.Message}");
-
-
-                return Json(new
+                _logger.LogError(ex, $"Error processing SDS data: {ex.Message}");
+                return StatusCode(500, new
                 {
                     success = false,
-                    message = "An error occurred while saving the data. Please try again or contact support."
+                    message = "An error occurred while processing the data. Please try again or contact support."
                 });
             }
         }
+
 
 
         // public class SDSContentItem
@@ -150,6 +283,7 @@ namespace SDS.Controllers
         //     public int HeadersHId { get; set; }
         //     public int HeadersHDId { get; set; }
         // }
+
 
         [HttpGet("Error")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
