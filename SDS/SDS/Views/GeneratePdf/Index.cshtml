@@ -3,4 +3,63 @@
 }
 
 <h1>@ViewData["Title"]</h1>
-<p>Welcome to the Safety Data Sheet management system. Use the navigation menu to explore.</p>
+<p>Enter a Product Number to generate or preview its Safety Data Sheet:</p>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="input-group mb-3">
+            <input type="text"
+                   class="form-control"
+                   id="productNoInput"
+                   placeholder="Enter Product Number (e.g., P00001-A42A67DC)"
+                   aria-label="Product Number" value="P00001-A42A67DC">
+
+            <button type="button"
+                    class="btn btn-primary"
+                    onclick="generatePdf()">
+                <i class="bi bi-file-earmark-pdf"></i> Download PDF
+            </button>
+
+            <button type="button"
+                    class="btn btn-secondary"
+                    onclick="previewPdf()">
+                <i class="bi bi-eye"></i> Preview
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function getProductNo() {
+            const productNo = document.getElementById('productNoInput').value.trim();
+            if (!productNo) {
+                alert('Please enter a Product Number');
+                return null;
+            }
+            return encodeURIComponent(productNo);
+        }
+
+        function generatePdf() {
+            const productNo = getProductNo();
+            if (productNo) {
+                window.location.href = `@Url.Action("Generate", "GeneratePdf")/${productNo}`;
+            }
+        }
+
+        function previewPdf() {
+            const productNo = getProductNo();
+            if (productNo) {
+                window.open(`@Url.Action("Pdf", "GeneratePdf")/${productNo}`, '_blank');
+            }
+        }
+
+        // Handle Enter key in input field
+        document.getElementById('productNoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                generatePdf();
+            }
+        });
+    </script>
+}
