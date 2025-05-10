@@ -64,7 +64,7 @@
 
             content += $@"<tr class=""content-row"">
                             <td style=""border-right-color: white !important;""></td>
-                            <td colspan=""6"">{data}</td>
+                            <td colspan=""6"">{HtmlRaw(data)}</td>
                          </tr>";
         }
 
@@ -82,7 +82,7 @@
 
         content += $@"<td colspan='3'>{HtmlRaw(data)}</td>";
 
-        string element = $@"<tr class=""content-row"">{content}</tr>";
+        string element = $@"<tr class=""content-row"">{HtmlRaw(content)}</tr>";
 
         return new HtmlString(element);
     }
@@ -93,13 +93,13 @@
         display: block;
         overflow: hidden;
         margin-top: 0px;
-        padding: 0 0 5% 0;
+        padding: 0;
         font-family: Arial, sans-serif;
     }
 
     .content {
         margin-left: 0px;
-        padding: 0 2rem 1.5rem 2rem;
+        padding: 0 2rem 0 2rem;
         flex-grow: 1;
         overflow-y: auto;
         background-color: #fff;
@@ -144,9 +144,13 @@
     }
 
     tbody, td, tfoot, th, thead {
-        border: 1px solid gray !important; 
+        border: 0.5px solid gray !important; 
         padding: 5px !important;
         text-justify: auto !important;
+    }
+
+    td{
+        padding: 10px !important;
     }
 
     h5{
@@ -156,6 +160,7 @@
 
     .noRightB {
         border-right: 0px;
+        white-space: nowrap;
     }
 
     .four-fw-bold {
@@ -266,8 +271,8 @@
                 <td colspan="5" class="fst-italic">@HtmlRaw(Model.InciName)</td>
             </tr>
             <tr>
-                <th class="fw-bold">CAS #</th>
-                <td colspan="2">@HtmlRaw(Model.CasNumber)</td>
+                <th class="fw-bold text-nowrap">CAS #</th>
+                <td colspan="1">@HtmlRaw(Model.CasNumber)</td>
                 <th class="fw-bold noRightB">FEMA #</th>
                 <td colspan="1">@HtmlRaw(Model.FemaNumber)</td>
                 <th class="fw-bold noRightB">EINECS #</th>
@@ -408,19 +413,19 @@
                 <th colspan="6"> Description of first aid measures </th>
             </tr>
             <tr>
-                <th colspan="2" class="four-fw-bold">Inhalation</th>
+                <th colspan="2" class="bgBlue">Inhalation</th>
                 <td colspan="5"> @HtmlRaw(Model.InhalationFirstAid)</td>
             </tr>
             <tr>
-                <th colspan="2" class="four-fw-bold"> Ingestion </th>
+                <th colspan="2" class="bgBlue"> Ingestion </th>
                 <td colspan="5">@HtmlRaw(Model.IngestionFirstAid)</td>
             </tr>
             <tr>
-                <th colspan="2" class="four-fw-bold"> Skin Contact </th>
+                <th colspan="2" class="bgBlue"> Skin Contact </th>
                 <td colspan="5">@HtmlRaw(Model.SkinContactFirstAid)</td>
             </tr>
             <tr>
-                <th colspan="2" class="four-fw-bold">Eye Contact</th>
+                <th colspan="2" class="bgBlue">Eye Contact</th>
                 <td colspan="5">@HtmlRaw(Model.EyeContactFirstAid)</td>
             </tr>
 
@@ -597,13 +602,13 @@
                     @if (Model.ImagesByContentID.TryGetValue(ImageIds.protectiveEquipmentImage, out var ProtectiveEquipmentImages))
                     {
                         <div style="display: flex; flex-direction: row; gap: 1rem;">
-                            @foreach (var image in images)
+                            @foreach (var image in ProtectiveEquipmentImages)
                             {
                                 <div style="display: flex; flex-direction: column; align-items: center;">
                                     <img src="@Functions.ConvertByteToBase64Image(image.ImageData)"
                                          alt="@image.ImageName"
                                          style="width: 60px; height: 60px;">
-                                    <span style="font-size: 0.7rem; color: #6c757d; margin-top: 0.25rem;">@image.ImageName</span>
+                                    @* <span style="font-size: 0.7rem; color: #6c757d; margin-top: 0.25rem;">@image.ImageName</span> *@
                                 </div>
                             }
                         </div>

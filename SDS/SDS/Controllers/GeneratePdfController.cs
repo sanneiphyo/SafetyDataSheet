@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
 using SDS.Data;
@@ -76,8 +77,8 @@ namespace SDS.Controllers
                     },
                     HeaderTemplate = @$"
                     <div style='width:100%;font-size: 11px; border-bottom: 1px solid #333; 
-                        padding-bottom: 3mm; line-height: 1.5; position: relative;'>
-                        <div style='display: flex; justify-content: space-between; align-items: center; margin: 0 5mm;'>
+                        line-height: 1.5; position: relative;'>
+                        <div style='display: flex; justify-content: space-between; align-items: center;padding:15px;'>
                             <div>
                                 <strong style='font-size: 12px;'>PRO-OILS AROMATHERAPY</strong><br>
                                 MATERIAL SAFETY DATA SHEET
@@ -613,48 +614,74 @@ namespace SDS.Controllers
             return viewModel;
         }
 
+        //private void MapFromHeaderHImageToViewModel(List<HeaderHImage> headerHImages, SdsViewModel viewModel)
+        //{
+        //    if (headerHImages == null || !headerHImages.Any())
+        //    {
+        //        return;
+        //    }
+
+        //    // Group images by ContentID
+        //    var imagesByContentId = headerHImages.GroupBy(img => img.ContentID);
+
+        //    foreach (var group in imagesByContentId)
+        //    {
+        //        string contentId = group.Key;
+
+        //        // Skip if contentId is null or empty
+        //        if (string.IsNullOrEmpty(contentId))
+        //        {
+        //            continue;
+        //        }
+
+        //        // Create a list for this contentId if it doesn't exist
+        //        if (!viewModel.ImagesByContentID.ContainsKey(contentId))
+        //        {
+        //            viewModel.ImagesByContentID[contentId] = new List<HeaderHImage>();
+        //        }
+
+        //        // Add each image to the appropriate list, ordered by the Order property
+        //        foreach (var image in group.OrderBy(img => img.Order))
+        //        {
+        //            viewModel.ImagesByContentID[contentId].Add(new HeaderHImage
+        //            {
+        //                Id = image.Id,
+        //                ContentID = image.ContentID,
+        //                ProductId = image.ProductId,
+        //                ImageName = image.ImageName,
+        //                ContentType = image.ContentType,
+        //                ImageData = image.ImageData,
+        //                Base64Image = image.Base64Image != null ? Convert.ToBase64String(image.ImageData) : null,
+        //                Order = image.Order
+        //            });
+        //        }
+        //    }
+        //}
         private void MapFromHeaderHImageToViewModel(List<HeaderHImage> headerHImages, SdsViewModel viewModel)
         {
-            if (headerHImages == null || !headerHImages.Any())
-            {
-                return;
-            }
+            if (headerHImages == null || !headerHImages.Any()) return;
 
-            // Group images by ContentID
-            var imagesByContentId = headerHImages.GroupBy(img => img.ContentID);
+            var contentGroups = headerHImages
+                .Where(img => !string.IsNullOrEmpty(img.ContentID))
+                .GroupBy(img => img.ContentID)
+                .ToDictionary(g => g.Key,
+                    g => g.OrderBy(img => img.Order)
+                                    .Select(img => new HeaderHImage
+                                    {
+                                        Id = img.Id,
+                                        ContentID = img.ContentID,
+                                        ProductId = img.ProductId,
+                                        ImageName = img.ImageName,
+                                        ContentType = img.ContentType,
+                                        ImageData = img.ImageData,
+                                        Base64Image = img.Base64Image != null
+                                            ? Convert.ToBase64String(img.ImageData)
+                                            : null,
+                                        Order = img.Order
+                                    })
+                                    .ToList());
 
-            foreach (var group in imagesByContentId)
-            {
-                string contentId = group.Key;
-
-                // Skip if contentId is null or empty
-                if (string.IsNullOrEmpty(contentId))
-                {
-                    continue;
-                }
-
-                // Create a list for this contentId if it doesn't exist
-                if (!viewModel.ImagesByContentID.ContainsKey(contentId))
-                {
-                    viewModel.ImagesByContentID[contentId] = new List<HeaderHImage>();
-                }
-
-                // Add each image to the appropriate list, ordered by the Order property
-                foreach (var image in group.OrderBy(img => img.Order))
-                {
-                    viewModel.ImagesByContentID[contentId].Add(new HeaderHImage
-                    {
-                        Id = image.Id,
-                        ContentID = image.ContentID,
-                        ProductId = image.ProductId,
-                        ImageName = image.ImageName,
-                        ContentType = image.ContentType,
-                        ImageData = image.ImageData,
-                        Base64Image = image.Base64Image != null ? Convert.ToBase64String(image.ImageData) : null,
-                        Order = image.Order
-                    });
-                }
-            }
+            viewModel.ImagesByContentID = contentGroups;
         }
 
         private async Task<SdsViewModel> GetSdsViewModelByProductIdAsync(string productId)
