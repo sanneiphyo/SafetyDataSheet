@@ -901,8 +901,7 @@
         @Html.Raw(PrintOneLine(14.4, "Packing group", Model.PackingGroup))
         @Html.Raw(PrintOneLine(14.5, "Environmental hazards", Model.EnvironmentalHazards, false, "environmentalHazards", Model.ImagesByContentID))
         @Html.Raw(PrintOneLine(14.6, "Special precautions for user", Model.SpecialPrecautions))
-        @Html.Raw(PrintOneLine(14.6, "Bulk Transport", Model.BulkTranprt)) <!-- TODO: Need title for this line -->
-        @Html.Raw(PrintOneLine(14.7, "Transport in bulk according to Annex II of MARPOL73/78 and the IBC code", Model.IbcCode))
+        @Html.Raw(PrintOneLine(14.7, $"Transport in bulk according to {Model.BulkTranprt}", Model.IbcCode))
     </table>
 
     <h6 class="text-decoration-underline">15. REGULATORY INFORMATION</h6>
