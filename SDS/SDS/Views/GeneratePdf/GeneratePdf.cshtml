@@ -29,16 +29,12 @@
 }
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        text-align: justify;
-    }
-
     .wrapper {
         display: block;
         overflow: hidden;
         margin-top: 0px;
-        padding: 2% 0;
+        padding: 0 0 5% 0;
+        font-family: Arial, sans-serif;
     }
 
     .content {
@@ -59,10 +55,10 @@
         font-weight: bold;
     }
 
-        .header-row .header-row-child {
-            background-color: white;
-            color: black;
-        }
+    .header-row .header-row-child {
+        background-color: white;
+        color: black;
+    }
 
     .sec-header-row {
         background-color: #00285b !important;
@@ -90,6 +86,11 @@
     tbody, td, tfoot, th, thead {
         border: 1px solid gray !important; 
         padding: 5px !important;
+        text-justify: auto !important;
+    }
+
+    h5{
+        text-align:left !important;
         text-justify: auto !important;
     }
 
@@ -132,10 +133,10 @@
         font-weight: bold;
     }
 
-        .header-row td {
-            padding: 5px 10px;
-            border: 1px solid #000;
-        }
+    .header-row td {
+        padding: 5px 10px;
+        border: 1px solid #000;
+    }
 
     .content-row td {
         padding: 5px 10px;
@@ -181,7 +182,7 @@
 </div>
 <div>
     <!-- Section 1 Table -->
-    <h5 class="text-decoration-underline">01. IDENTIFICATION OF THE SUBSTANCE/PREPARATION & THE COMPANY/UNDERTAKING</h5>
+    <h5 class="text-decoration-underline" style="text-justify:auto">01. IDENTIFICATION OF THE SUBSTANCE/PREPARATION & THE COMPANY/UNDERTAKING</h5>
     <table class="table table-bordered mb-3">
         <tbody>
             <!-- Section 1.1 -->

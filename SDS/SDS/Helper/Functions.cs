@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.Extensions.Hosting.Internal;
+using System.Text.RegularExpressions;
 
 namespace SDS.Helper
 {
@@ -11,6 +12,13 @@ namespace SDS.Helper
 
             // Regular expression to match HTML tags
             return Regex.Replace(input, "<[^>]*>", string.Empty, RegexOptions.IgnoreCase);
+        }
+
+        public static string GetBase64Image(string fileName, string path)
+        {
+            var imagePath = Path.Combine(path, fileName);
+            var data = $"data:image/jpeg;base64,{Convert.ToBase64String(File.ReadAllBytes(imagePath))}";
+            return data;
         }
     }
 }

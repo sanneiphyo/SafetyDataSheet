@@ -61,7 +61,9 @@ namespace SDS.Controllers
 
                 // Configure PDF options
                 var now = DateTime.Now;
-                string imagePath = Path.Combine(_env.WebRootPath, "images", "prooil.jpg");
+                var imgsrc = ImageLogo.Prooli 
+                    ?? Functions.GetBase64Image("prooil.jpg", Path.Combine(_env.WebRootPath, "images"));
+
                 var pdfOptions = new PdfOptions
                 {
                     Format = PaperFormat.A4,
@@ -70,7 +72,7 @@ namespace SDS.Controllers
                     MarginOptions = new MarginOptions
                     {
                         Top = "25mm",
-                        Bottom = "30mm",
+                        Bottom = "40mm",
                     },
                     HeaderTemplate = @$"
                     <div style='width:100%;font-size: 11px; border-bottom: 1px solid #333; 
@@ -81,7 +83,7 @@ namespace SDS.Controllers
                                 MATERIAL SAFETY DATA SHEET
                             </div>
                             <div style='position: absolute; width: 150px; height: 45px; overflow: hidden; left: 50%; top: 40%; transform: translate(-50%, -50%);'>
-                              <img src='{imagePath}'
+                              <img src='{imgsrc}'
                                    style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;'/>
                             </div>
                             <div>
@@ -99,7 +101,7 @@ namespace SDS.Controllers
                             </div>
                             <div style='text-align:right; line-height:1.4;'>
                                 <strong style='display:block; margin-bottom:1mm;'>REVISION DETAILS</strong>
-                                Date: {vm.RevisionDate ?? DateTime.Now:yyyy-MM-dd}<br>
+                                Date: {vm.RevisionDate ?? DateTime.Now:yyyy-MM-dd}
                                 Rev No: {vm.RevNo}
                             </div>
                         </div>
