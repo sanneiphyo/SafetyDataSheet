@@ -100,7 +100,7 @@ namespace SDS.Controllers
                                 <div style='margin-top:1mm;'>Tel: {Functions.RemoveHtmlTags(vm.EmergencyPhone)}</div>
                             </div>
                             <div style='text-align:right; line-height:1.4;'>
-                                <strong style='display:block; margin-bottom:1mm;'>REVISION DETAILS</strong>
+                                <strong style='display:block; margin-bottom:3mm;'>REVISION DETAILS</strong>
                                 Date: {vm.RevisionDate ?? DateTime.Now:yyyy-MM-dd}
                                 Rev No: {vm.RevNo}
                             </div>
@@ -691,10 +691,6 @@ namespace SDS.Controllers
         #endregion
 
 
-        [HttpGet("aidMeasurement")]
-        public ActionResult AidMeasurementView()
-        {
-            return View("AidMeasurementDesign");
-        }
+   
     }
 }
