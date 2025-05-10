@@ -170,8 +170,8 @@
         font-family: Georgia, serif;
         background-color: #fcc73b;
         display: inline-block;
-        padding: 1% 20% !important;
-        margin: 0;
+        padding: 0.5% 5% !important;
+        margin-bottom: 2rem;
     }
 
     .main-title {
@@ -235,6 +235,9 @@
     .sdsHeader{
         width:30%;
     }
+    .text-decoration-underline{
+        font : bold;
+    }
 </style>
 
 <div class="text-center mb-2">
@@ -242,7 +245,7 @@
 </div>
 <div>
     <!-- Section 1 Table -->
-    <h5 class="text-decoration-underline" style="text-justify:auto">01. IDENTIFICATION OF THE SUBSTANCE/PREPARATION & THE COMPANY/UNDERTAKING</h5>
+    <h6 class="text-decoration-underline" style="text-justify:auto">01. IDENTIFICATION OF THE SUBSTANCE/PREPARATION & THE COMPANY/UNDERTAKING</h6>
     <table class="table table-bordered mb-3">
         <tbody>
             <!-- Section 1.1 -->
@@ -301,7 +304,7 @@
     </table>
 
     <!-- Section 2 Table -->
-    <h5 class="text-decoration-underline">02. HAZARDS IDENTIFICATION</h5>
+    <h6 class="text-decoration-underline">02. HAZARDS IDENTIFICATION</h6>
     <table class="table table-bordered mb-3">
         <tbody>
             <!-- Section 2.1 -->
@@ -377,7 +380,7 @@
     </table>
 
     <!-- Section 3 Table -->
-    <h5 class="text-decoration-underline">03. COMPOSITION/INFORMATION ON INGREDIENTS</h5>
+    <h6 class="text-decoration-underline">03. COMPOSITION/INFORMATION ON INGREDIENTS</h6>
     <table class="table table-bordered mb-3">
         <tbody>
             <!-- Section 3.1 -->
@@ -397,7 +400,7 @@
     </table>
 
     <!-- Section 4 -->
-    <h5 class="text-decoration-underline ">04. FIRST AID MEASURES</h5>
+    <h6 class="text-decoration-underline ">04. FIRST AID MEASURES</h6>
     <table class="table table-bordered">
         <tbody>
             <tr class="header-row">
@@ -450,7 +453,7 @@
     </table>
 
     <!-- Section 5 Table -->
-    <h5 class="text-decoration-underline ">05. FIRE-FIGHTING MEASURES</h5>
+    <h6 class="text-decoration-underline ">05. FIRE-FIGHTING MEASURES</h6>
     <table class="table table-bordered mb-3">
 
         <tbody>
@@ -489,7 +492,7 @@
     </table>
 
     <!---Section 6 Table  -->
-    <h5 class="text-decoration-underline ">06. ACCIDENTAL RELEASE MEASURES</h5>
+    <h6 class="text-decoration-underline ">06. ACCIDENTAL RELEASE MEASURES</h6>
     <table class="table table-bordered">
         <tbody>
             <!-- 6.1 -->
@@ -534,7 +537,7 @@
     </table>
 
     <!---Section 7 Table  -->
-    <h5 class="text-decoration-underline ">07. HANDLING AND STORAGE</h5>
+    <h6 class="text-decoration-underline ">07. HANDLING AND STORAGE</h6>
     <table class="table table-bordered">
         <tbody>
             <!-- 7.1 -->
@@ -570,7 +573,7 @@
     </table>
 
     <!---Section 8 Table  -->
-    <h5 class="text-decoration-underline">08. EXPOSURE CONTROLS/PERSONAL PROTECTION</h5>
+    <h6 class="text-decoration-underline">08. EXPOSURE CONTROLS/PERSONAL PROTECTION</h6>
     <table class="table table-bordered mb-3">
         <tbody>
             <tr class="header-row">
@@ -675,7 +678,7 @@
     </table>
 
     <!-- Section 9 Table -->
-    <h5 class="text-decoration-underline">09. PHYSICAL AND CHEMICAL PROPERTIES</h5>
+    <h6 class="text-decoration-underline">09. PHYSICAL AND CHEMICAL PROPERTIES</h6>
     <table class="table table-bordered mb-3">
         <tbody>
             <!-- Section 9.1 -->
@@ -763,7 +766,7 @@
     </table>
 
     <!-- Section 10 Table -->
-    <h5 class="text-decoration-underline">10. STABILITY AND REACTIVITY</h5>
+    <h6 class="text-decoration-underline">10. STABILITY AND REACTIVITY</h6>
     <table class="table table-bordered mb-3 ">
         <tbody>
             <!-- Section 10.1 -->
@@ -841,7 +844,7 @@
     </table>
 
     <!-- Section 11 Table -->
-    <h5 class="text-decoration-underline">11. TOXICOLOGICAL INFORMATION</h5>
+    <h6 class="text-decoration-underline">11. TOXICOLOGICAL INFORMATION</h6>
     <table id="section-11-data" class="mb-3">
         <tr class="header-row">
             <td class="section-number">11.1</td>
@@ -862,7 +865,7 @@
     </table>
 
     <!-- Section 12 Table -->
-    <h5 class="text-decoration-underline">12. ECOLOGICAL INFORMATION</h5>
+    <h6 class="text-decoration-underline">12. ECOLOGICAL INFORMATION</h6>
     <table id="section-12-data" class="mb-3">
         @Html.Raw(PrintOneLine(12.1, "Toxicity", Model.EcoToxicity, true))
         @Html.Raw(PrintOneLine(12.2, "Persistence & degradability", Model.PersistenceDegradability))
@@ -873,13 +876,13 @@
     </table>
 
     <!-- Section 13 Table -->
-    <h5 class="text-decoration-underline">13. DISPOSAL CONSIDERATIONS</h5>
+    <h6 class="text-decoration-underline" >13. DISPOSAL CONSIDERATIONS</h6>
     <table id="section-13-data" class="mb-3">
         @Html.Raw(PrintOneLine(13.1, "Waste treatment methods", Model.WasteTreatmentMethod))
     </table>
 
     <!-- Section 14 Table -->
-    <h5 class="text-decoration-underline">14. TRANSPORT INFORMATION</h5>
+    <h6 class="text-decoration-underline">14. TRANSPORT INFORMATION</h6>
     <table id="section-14-data" class="mb-3">
         <tr class="header-row">
             <td colspan="1" class="section-number">14.1</td>
@@ -897,13 +900,13 @@
         @Html.Raw(PrintOneLine(14.7, "Transport in bulk according to Annex II of MARPOL73/78 and the IBC code", Model.IbcCode))
     </table>
 
-    <h5 class="text-decoration-underline">15. REGULATORY INFORMATION</h5>
+    <h6 class="text-decoration-underline">15. REGULATORY INFORMATION</h6>
     <table id="section-15-data" class="mb-3">
         @Html.Raw(PrintOneLine(15.1, "Safety, health and environmental regulations/legislation specific for the substance or mixture", Model.SafetyRegulations))
         @Html.Raw(PrintOneLine(15.2, "Chemical safety assessment", Model.ChemicalSafetyAssessment))
     </table>
 
-    <h5 class="text-decoration-underline">16. OTHER INFORMATION</h5>
+    <h6 class="text-decoration-underline">16. OTHER INFORMATION</h6>
     <table id="section-16-data" class="mb-3">
         @* @Html.Raw(PrintSideBySide("Hazard and/or Precautionary Statements in Full", Model.PrecautionaryStatements, true, "colspan='1'", "colspan='6'")) *@
         @* @Html.Raw(PrintSideBySide("Other Information", Model.OtherInformation, true, "colspan='1'", "colspan='6'")) *@
