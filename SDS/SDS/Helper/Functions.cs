@@ -20,5 +20,10 @@ namespace SDS.Helper
             var data = $"data:image/jpeg;base64,{Convert.ToBase64String(File.ReadAllBytes(imagePath))}";
             return data;
         }
+
+        public static string ConvertByteToBase64Image(byte[] imageBytes, string mimeType = "image/png")
+        {
+            return $"data:{mimeType};base64,{Convert.ToBase64String(imageBytes)}";
+        }
     }
 }
