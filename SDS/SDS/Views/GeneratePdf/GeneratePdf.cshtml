@@ -2,6 +2,8 @@
 @using Microsoft.AspNetCore.Html
 @using System.Text.RegularExpressions
 @using SDS.Helper
+@using System;
+@using System.IO;
 @model SDS.Models.SdsViewModel;
 
 
@@ -78,7 +80,7 @@
         string borderColor = bgBlue ? "#002060" : "white";
 
         string content = $@"<td class=""{bgClass}"" {fspan} style=""border-right-color: {borderColor} !important;""></td>
-                            <td class=""{bgClass}"" {sspan}><b>{title}</b></td>";
+                            <td class=""{bgClass} second-col"" {sspan}><b>{title}</b></td>";
 
         content += $@"<td colspan='3'>{HtmlRaw(data)}</td>";
 
@@ -89,6 +91,10 @@
 }
 
 <style>
+    *{
+        text-align: justify;
+    }
+
     .wrapper {
         display: block;
         overflow: hidden;
@@ -146,11 +152,14 @@
     tbody, td, tfoot, th, thead {
         border: 0.5px solid gray !important;
         padding: 5px !important;
-        text-justify: auto !important;
     }
 
     td{
         padding: 10px !important;
+    }
+    
+    td, th{
+        padding-right: 43px !important;
     }
 
     h5{
@@ -161,10 +170,6 @@
     .noRightB {
         border-right: 0px;
         white-space: nowrap;
-    }
-
-    td {
-        padding: 10px !important;
     }
 
     .four-fw-bold {
@@ -247,13 +252,6 @@
     .text-decoration-underline{
         font : bold;
     }
-
-    .text-align p {
-        margin: 0;
-        padding: 5px 10px;
-        text-align: left;
-    }
-
 </style>
 
 <div class="text-center mb-2">
@@ -390,7 +388,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6" class="text-justify text-align">@Html.Raw(Model.OtherHazards)</td>
+                <td colspan="6" class="text-justify text-align">@HtmlRaw(Model.OtherHazards)</td>
             </tr>
         </tbody>
     </table>
