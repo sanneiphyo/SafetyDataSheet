@@ -2,6 +2,8 @@
 @using Microsoft.AspNetCore.Html
 @using System.Text.RegularExpressions
 @using SDS.Helper
+@using System;
+@using System.IO;
 @model SDS.Models.SdsViewModel;
 
 
@@ -78,7 +80,7 @@
         string borderColor = bgBlue ? "#002060" : "white";
 
         string content = $@"<td class=""{bgClass}"" {fspan} style=""border-right-color: {borderColor} !important;""></td>
-                            <td class=""{bgClass}"" {sspan}><b>{title}</b></td>";
+                            <td class=""{bgClass} second-col"" {sspan}><b>{title}</b></td>";
 
         content += $@"<td colspan='3'>{HtmlRaw(data)}</td>";
 
@@ -89,6 +91,9 @@
 }
 
 <style>
+    *{
+        text-align: justify;
+    }
     .wrapper {
         display: block;
         overflow: hidden;
@@ -379,7 +384,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6" class="text-justify">@Html.Raw(Model.OtherHazards)</td>
+                <td colspan="6" class="text-justify">@HtmlRaw(Model.OtherHazards)</td>
             </tr>
         </tbody>
     </table>
