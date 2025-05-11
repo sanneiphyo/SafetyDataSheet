@@ -103,8 +103,10 @@ namespace SDS.Controllers
                             </div>
                             <div style='text-align:right; line-height:1.4;'>
                                 <strong style='display:block; margin-bottom:3mm;'>REVISION DETAILS</strong>
-                                <div>Date: {vm.RevisionDate ?? DateTime.Now:yyyy-MM-dd}</div>
-                                <div>Rev No: {vm.RevNo}</div>
+                                <div>
+                                <p style='display:block;> Date: {vm.RevisionDate ?? DateTime.Now:yyyy-MM-dd}</p>
+                                 <p style='display:block;> Rev No: {vm.RevNo}1234565</p>
+                                </div>
                             </div>
                         </div>
                         <div style='font-size:10px; font-weight:600; text-align:center; margin-top:2mm; padding-bottom:1mm;'>

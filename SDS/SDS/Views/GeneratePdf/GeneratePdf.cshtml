@@ -252,6 +252,10 @@
     .text-decoration-underline{
         font : bold;
     }
+
+    .white-space{
+        white-space : nowrap;
+    }
 </style>
 
 <div class="text-center mb-2">
@@ -280,11 +284,11 @@
                 <td colspan="5" class="fst-italic text-align">@HtmlRaw(Model.InciName)</td>
             </tr>
             <tr>
-                <th class="fw-bold" style="white-space:nowrap">CAS #</th>
+                <th class="fw-bold" class="text-align noRightB">CAS#</th>
                 <td colspan="2" class="text-align">@HtmlRaw(Model.CasNumber)</td>
-                <th class="fw-bold noRightB" style="white-space:nowrap">FEMA #</th>
+                <th class="fw-bold noRightB">FEMA#</th>
                 <td colspan="1" class="text-align">@HtmlRaw(Model.FemaNumber)</td>
-                <th class="fw-bold noRightB" style="white-space:nowrap">EINECS #</th>
+                <th class="fw-bold noRightB" >EINECS#</th>
                 <td colspan="1" class="text-align">@HtmlRaw(Model.EinecsNumber)</td>
             </tr>
 
@@ -304,7 +308,7 @@
                 <th colspan="6">Details of the supplier of the safety data sheet</th>
             </tr>
             <tr>
-                <td style="border-right-color: white !important;"></td>
+                <td style="border-right-color: "></td>
                 <td colspan="6" class="text-align">@HtmlRaw(Model.SupplierDetails)</td>
             </tr>
 
