@@ -144,7 +144,7 @@
     }
 
     tbody, td, tfoot, th, thead {
-        border: 0.5px solid gray !important; 
+        border: 0.5px solid gray !important;
         padding: 5px !important;
         text-justify: auto !important;
     }
@@ -161,6 +161,10 @@
     .noRightB {
         border-right: 0px;
         white-space: nowrap;
+    }
+
+    td {
+        padding: 10px !important;
     }
 
     .four-fw-bold {
@@ -420,19 +424,19 @@
                 <th colspan="6"> Description of first aid measures </th>
             </tr>
             <tr>
-                <th colspan="2" class="four-fw-bold">Inhalation</th>
+                <th colspan="2" class="bgBlue">Inhalation</th>
                 <td colspan="5" class="text-align"> @HtmlRaw(Model.InhalationFirstAid)</td>
             </tr>
             <tr>
-                <th colspan="2" class="four-fw-bold"> Ingestion </th>
+                <th colspan="2" class="bgBlue"> Ingestion </th>
                 <td colspan="5" class="text-align">@HtmlRaw(Model.IngestionFirstAid)</td>
             </tr>
             <tr>
-                <th colspan="2" class="four-fw-bold"> Skin Contact </th>
+                <th colspan="2" class="bgBlue"> Skin Contact </th>
                 <td colspan="5" class="text-align">@HtmlRaw(Model.SkinContactFirstAid)</td>
             </tr>
             <tr>
-                <th colspan="2" class="four-fw-bold">Eye Contact</th>
+                <th colspan="2" class="bgBlue">Eye Contact</th>
                 <td colspan="5" class="text-align">@HtmlRaw(Model.EyeContactFirstAid)</td>
             </tr>
 
