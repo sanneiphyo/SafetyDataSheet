@@ -105,7 +105,7 @@ namespace SDS.Controllers
                                 <strong style='display:block; margin-bottom:3mm;'>REVISION DETAILS</strong>
                                 <div>
                                 <p style='display:block;> Date: {vm.RevisionDate ?? DateTime.Now:yyyy-MM-dd}</p>
-                                 <p style='display:block;> Rev No: {vm.RevNo}1234565</p>
+                                 <p style='display:block;> Rev No: {vm.RevNo}</p>
                                 </div>
                             </div>
                         </div>
