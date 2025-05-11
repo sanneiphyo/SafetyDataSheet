@@ -238,6 +238,13 @@
     .text-decoration-underline{
         font : bold;
     }
+
+    .text-align p {
+        margin: 0;
+        padding: 5px 10px;
+        text-align: left;
+    }
+
 </style>
 
 <div class="text-center mb-2">
@@ -255,23 +262,23 @@
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold">Product Name</th>
-                <td colspan="5">@HtmlRaw(Model.ProductName)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.ProductName)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold">Biological Definition</th>
-                <td colspan="5" class="fst-italic">@HtmlRaw(Model.BiologicalDefinition)</td>
+                <td colspan="5" class="fst-italic text-align">@HtmlRaw(Model.BiologicalDefinition)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold">INCI Name</th>
-                <td colspan="5" class="fst-italic">@HtmlRaw(Model.InciName)</td>
+                <td colspan="5" class="fst-italic text-align">@HtmlRaw(Model.InciName)</td>
             </tr>
             <tr>
                 <th class="fw-bold">CAS #</th>
-                <td colspan="2">@HtmlRaw(Model.CasNumber)</td>
+                <td colspan="2" class="text-align">@HtmlRaw(Model.CasNumber)</td>
                 <th class="fw-bold noRightB">FEMA #</th>
-                <td colspan="1">@HtmlRaw(Model.FemaNumber)</td>
+                <td colspan="1" class="text-align">@HtmlRaw(Model.FemaNumber)</td>
                 <th class="fw-bold noRightB">EINECS #</th>
-                <td colspan="1">@HtmlRaw(Model.EinecsNumber)</td>
+                <td colspan="1" class="text-align">@HtmlRaw(Model.EinecsNumber)</td>
             </tr>
 
             <!-- Section 1.2 -->
@@ -281,7 +288,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.IdentifiedUses)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.IdentifiedUses)</td>
             </tr>
 
             <!-- Section 1.3 -->
@@ -291,14 +298,14 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.SupplierDetails)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.SupplierDetails)</td>
             </tr>
 
             <!-- Section 1.4 -->
             <tr class="header-row">
                 <th class="section-number">1.4</th>
                 <th colspan="2">Emergency Tel. No.</th>
-                <td colspan="4" class="header-row-child">@HtmlRaw(Model.EmergencyPhone)</td>
+                <td colspan="4" class="header-row-child text-align">@HtmlRaw(Model.EmergencyPhone)</td>
             </tr>
         </tbody>
     </table>
@@ -314,7 +321,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">
+                <td colspan="6" class="text-align">
                     @HtmlRaw(Model.ClassificationContent)
                 </td>
             </tr>
@@ -325,7 +332,7 @@
                 <th colspan="6">Label Elements</th>
             </tr>
             <tr class="header-row">
-                <th colspan="7">@HtmlRaw(Model.LabelContent)</th>
+                <th colspan="7" class="text-align">@HtmlRaw(Model.LabelContent)</th>
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
@@ -352,11 +359,11 @@
             </tr>
             <tr class="header-row">
                 <th colspan="2">Signal Word</th>
-                <td colspan="5" class="header-row-child">@HtmlRaw(Model.SignalWord)</td>
+                <td colspan="5" class="header-row-child text-align">@HtmlRaw(Model.SignalWord)</td>
             </tr>
             <tr class="header-row">
                 <th colspan="2">Contains</th>
-                <td colspan="5" class="header-row-child">@HtmlRaw(Model.ContainsInfo)</td>
+                <td colspan="5" class="header-row-child text-align">@HtmlRaw(Model.ContainsInfo)</td>
             </tr>
 
             <tr class="header-row">
@@ -364,7 +371,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.HazardStatements)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.HazardStatements)</td>
             </tr>
 
             <!-- Section 2.3 -->
@@ -374,7 +381,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6" class="text-justify">@Html.Raw(Model.OtherHazards)</td>
+                <td colspan="6" class="text-justify text-align">@Html.Raw(Model.OtherHazards)</td>
             </tr>
         </tbody>
     </table>
@@ -392,7 +399,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">
+                <td colspan="6" class="text-align">
                     @HtmlRaw(Model.ClassificationContent)
                 </td>
             </tr>
@@ -409,19 +416,19 @@
             </tr>
             <tr>
                 <th colspan="2" class="four-fw-bold">Inhalation</th>
-                <td colspan="5"> @HtmlRaw(Model.InhalationFirstAid)</td>
+                <td colspan="5" class="text-align"> @HtmlRaw(Model.InhalationFirstAid)</td>
             </tr>
             <tr>
                 <th colspan="2" class="four-fw-bold"> Ingestion </th>
-                <td colspan="5">@HtmlRaw(Model.IngestionFirstAid)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.IngestionFirstAid)</td>
             </tr>
             <tr>
                 <th colspan="2" class="four-fw-bold"> Skin Contact </th>
-                <td colspan="5">@HtmlRaw(Model.SkinContactFirstAid)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.SkinContactFirstAid)</td>
             </tr>
             <tr>
                 <th colspan="2" class="four-fw-bold">Eye Contact</th>
-                <td colspan="5">@HtmlRaw(Model.EyeContactFirstAid)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.EyeContactFirstAid)</td>
             </tr>
 
             <tr class="header-row">
@@ -432,7 +439,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">
+                <td colspan="6" class="text-align">
                     @HtmlRaw(Model.SymptomsEffects)
                 </td>
             </tr>
@@ -445,7 +452,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">
+                <td colspan="6" class="text-align">
                     @HtmlRaw(Model.MedicalAttention)
                 </td>
             </tr>
@@ -464,7 +471,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.ExtinguishingMediaContent)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.ExtinguishingMediaContent)</td>
             </tr>
 
             <!-- 5.2 -->
@@ -474,7 +481,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.SpecialHazardsContent)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.SpecialHazardsContent)</td>
             </tr>
 
             <!-- 5.3 -->
@@ -484,7 +491,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">
+                <td colspan="6" class="text-align">
                     @HtmlRaw(Model.FirefighterAdviceContent)
                 </td>
             </tr>
@@ -502,7 +509,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.PersonalPrecautions)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.PersonalPrecautions)</td>
             </tr>
 
             <!-- 6.2 -->
@@ -512,7 +519,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.EnvironmentalPrecautions)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.EnvironmentalPrecautions)</td>
             </tr>
             <!-- 6.3 -->
             <tr class="header-row">
@@ -521,7 +528,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.ContainmentMethods)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.ContainmentMethods)</td>
             </tr>
 
             <!-- 6.4 -->
@@ -531,7 +538,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.SectionReferences)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.SectionReferences)</td>
             </tr>
         </tbody>
     </table>
@@ -547,7 +554,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.SafeHandlingPrecautions)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.SafeHandlingPrecautions)</td>
             </tr>
 
             <!-- 7.2 -->
@@ -557,7 +564,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.SafeStorageConditions)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.SafeStorageConditions)</td>
             </tr>
             <!-- 7.3 -->
             <tr class="header-row">
@@ -566,7 +573,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.SpecificEndUses)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.SpecificEndUses)</td>
             </tr>
 
         </tbody>
@@ -582,7 +589,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.ControlParameters)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.ControlParameters)</td>
             </tr>
             <tr class="header-row">
                 <th class="section-number">8.2</th>
@@ -618,61 +625,61 @@
                 <th colspan="2" class="fw-bold sdsHeader">
                     Process Conditions
                 </th>
-                <td colspan="5">@HtmlRaw(Model.ProcessConditions)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.ProcessConditions)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Engineering Measures
                 </th>
-                <td colspan="5">@HtmlRaw(Model.EngineeringMeasures)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.EngineeringMeasures)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Respiratory Equipment
                 </th>
-                <td colspan="5">@HtmlRaw(Model.RespiratoryEquipment)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.RespiratoryEquipment)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Hand Protection
                 </th>
-                <td colspan="5">@HtmlRaw(Model.HandProtection)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.HandProtection)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Eye Protection
                 </th>
-                <td colspan="5">@HtmlRaw(Model.EyeProtection)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.EyeProtection)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Other Protection
                 </th>
-                <td colspan="5">@HtmlRaw(Model.OtherProtection)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.OtherProtection)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Hygiene Measures
                 </th>
-                <td colspan="5">@HtmlRaw(Model.HygieneMeasures)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.HygieneMeasures)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Personal Protection
                 </th>
-                <td colspan="5">@HtmlRaw(Model.PersonalProtection)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.PersonalProtection)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Skin Protection
                 </th>
-                <td colspan="5">@HtmlRaw(Model.SkinProtection)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.SkinProtection)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Environmental Exposure Control
                 </th>
-                <td colspan="5">@HtmlRaw(Model.EnvironmentalExposure)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.EnvironmentalExposure)</td>
             </tr>
         </tbody>
     </table>
@@ -690,67 +697,67 @@
                 <th colspan="2" class="fw-bold sdsHeader">
                     Appearance
                 </th>
-                <td colspan="5">@HtmlRaw(Model.Appearance)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.Appearance)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Colour
                 </th>
-                <td colspan="5">@HtmlRaw(Model.Colour)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.Colour)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Odour
                 </th>
-                <td colspan="5">@HtmlRaw(Model.Odour)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.Odour)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Relative Density
                 </th>
-                <td colspan="5">@HtmlRaw(Model.RelativeDensity)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.RelativeDensity)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Flash Point (°C)
                 </th>
-                <td colspan="5">@HtmlRaw(Model.FlashPoint)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.FlashPoint)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Melting Point (°C)
                 </th>
-                <td colspan="5">@HtmlRaw(Model.MeltingPoint)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.MeltingPoint)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Refractive Index
                 </th>
-                <td colspan="5">@HtmlRaw(Model.RefractiveIndex)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.RefractiveIndex)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Boiling Point (°C)
                 </th>
-                <td colspan="5">@HtmlRaw(Model.BoilingPoint)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.BoilingPoint)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Vapour Pressure
                 </th>
-                <td colspan="5">@HtmlRaw(Model.VapourPressure)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.VapourPressure)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Solubility in Water @@ 20°C
                 </th>
-                <td colspan="5">@HtmlRaw(Model.SolubilityInWater)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.SolubilityInWater)</td>
             </tr>
             <tr>
                 <th colspan="2" class="fw-bold sdsHeader">
                     Auto-ignition temperature (°C)
                 </th>
-                <td colspan="5">@HtmlRaw(Model.AutoIgnitionTemp)</td>
+                <td colspan="5" class="text-align">@HtmlRaw(Model.AutoIgnitionTemp)</td>
             </tr>
 
             <!-- Section 9.2 -->
@@ -778,7 +785,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.ReactivityInfo)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.ReactivityInfo)</td>
             </tr>
 
             <!-- Section 10.2 -->
@@ -790,7 +797,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.ChemicalStability)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.ChemicalStability)</td>
             </tr>
 
             <!-- Section 10.3 -->
@@ -802,7 +809,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.HazardousReactions)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.HazardousReactions)</td>
             </tr>
 
             <!-- Section 10.4 -->
@@ -814,7 +821,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.ConditionsToAvoid)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.ConditionsToAvoid)</td>
             </tr>
 
             <!-- Section 10.5 -->
@@ -826,7 +833,7 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.IncompatibleMaterials)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.IncompatibleMaterials)</td>
             </tr>
 
             <!-- Section 10.6 -->
@@ -838,19 +845,19 @@
             </tr>
             <tr>
                 <td style="border-right-color: white !important;"></td>
-                <td colspan="6">@HtmlRaw(Model.HazardousDecomposition)</td>
+                <td colspan="6" class="text-align">@HtmlRaw(Model.HazardousDecomposition)</td>
             </tr>
         </tbody>
     </table>
 
     <!-- Section 11 Table -->
     <h6 class="text-decoration-underline">11. TOXICOLOGICAL INFORMATION</h6>
-    <table id="section-11-data" class="mb-3">
+    <table id="section-11-data" class="mb-3 ">
         <tr class="header-row">
             <td class="section-number">11.1</td>
             <td colspan="6">Information on toxicological effects</td>
         </tr>
-        @Html.Raw(PrintSideBySide("Acute Toxicity", Model.AcuteToxicity, default, default, "colspan='1'"))
+        @Html.Raw(PrintSideBySide("Acute Toxicity", Model.AcuteToxicity, default, default, "colspan='1' class='text-align'"))
         @Html.Raw(PrintSideBySide("Skin corrosion/irritation", Model.SkinCorrosion, default, default, "colspan='1'"))
         @Html.Raw(PrintSideBySide("Eye Damage", Model.EyeDamage, default, default, "colspan='1'"))
         @Html.Raw(PrintSideBySide("Respiratory or skin sensitisation", Model.SkinSensitization, default, default, "colspan='1'"))
@@ -866,7 +873,7 @@
 
     <!-- Section 12 Table -->
     <h6 class="text-decoration-underline">12. ECOLOGICAL INFORMATION</h6>
-    <table id="section-12-data" class="mb-3">
+    <table id="section-12-data" class="mb-3 ">
         @Html.Raw(PrintOneLine(12.1, "Toxicity", Model.EcoToxicity, true))
         @Html.Raw(PrintOneLine(12.2, "Persistence & degradability", Model.PersistenceDegradability))
         @Html.Raw(PrintOneLine(12.3, "Bioaccumulation Potential", Model.BioaccumulationPotential))
@@ -877,13 +884,13 @@
 
     <!-- Section 13 Table -->
     <h6 class="text-decoration-underline" >13. DISPOSAL CONSIDERATIONS</h6>
-    <table id="section-13-data" class="mb-3">
+    <table id="section-13-data" class="mb-3 ">
         @Html.Raw(PrintOneLine(13.1, "Waste treatment methods", Model.WasteTreatmentMethod))
     </table>
 
     <!-- Section 14 Table -->
     <h6 class="text-decoration-underline">14. TRANSPORT INFORMATION</h6>
-    <table id="section-14-data" class="mb-3">
+    <table id="section-14-data" class="mb-3 ">
         <tr class="header-row">
             <td colspan="1" class="section-number">14.1</td>
             <td colspan="6">UN number</td>
@@ -900,14 +907,16 @@
         @Html.Raw(PrintOneLine(14.7, "Transport in bulk according to Annex II of MARPOL73/78 and the IBC code", Model.IbcCode))
     </table>
 
+    <!-- Section 15 Table -->
     <h6 class="text-decoration-underline">15. REGULATORY INFORMATION</h6>
-    <table id="section-15-data" class="mb-3">
+    <table id="section-15-data" class="mb-3 ">
         @Html.Raw(PrintOneLine(15.1, "Safety, health and environmental regulations/legislation specific for the substance or mixture", Model.SafetyRegulations))
         @Html.Raw(PrintOneLine(15.2, "Chemical safety assessment", Model.ChemicalSafetyAssessment))
     </table>
 
+    <!-- Section 16 Table -->
     <h6 class="text-decoration-underline">16. OTHER INFORMATION</h6>
-    <table id="section-16-data" class="mb-3">
+    <table id="section-16-data" class="mb-3 ">
         @* @Html.Raw(PrintSideBySide("Hazard and/or Precautionary Statements in Full", Model.PrecautionaryStatements, true, "colspan='1'", "colspan='6'")) *@
         @* @Html.Raw(PrintSideBySide("Other Information", Model.OtherInformation, true, "colspan='1'", "colspan='6'")) *@
         @* @Html.Raw(PrintSideBySide("Revision Date", Model.RevisionDate.ToString(), true, "colspan='1'", "colspan='6'")) *@
@@ -917,31 +926,31 @@
             <th colspan="2" class="fw-bold sdsHeader">
                 Hazard and/or Precautionary Statements in Full
             </th>
-            <td colspan="5">@HtmlRaw(Model.PrecautionaryStatements)</td>
+            <td colspan="5" class="text-align">@HtmlRaw(Model.PrecautionaryStatements)</td>
         </tr>
         <tr>
             <th colspan="2" class="fw-bold sdsHeader">
                 Other Information
             </th>
-            <td colspan="5">@HtmlRaw(Model.OtherInformation)</td>
+            <td colspan="5" class="text-align">@HtmlRaw(Model.OtherInformation)</td>
         </tr>
         <tr>
             <th colspan="2" class="fw-bold sdsHeader">
                 Revision Date
             </th>
-            <td colspan="5">@HtmlRaw(Model.RevisionDate.ToString())</td>
+            <td colspan="5" class="text-align">@HtmlRaw(Model.RevisionDate.ToString())</td>
         </tr>
         <tr>
             <th colspan="2" class="fw-bold sdsHeader">
                 Reason for revision
             </th>
-            <td colspan="5">@HtmlRaw(Model.RevisionReason)</td>
+            <td colspan="5" class="text-align">@HtmlRaw(Model.RevisionReason)</td>
         </tr>
         <tr>
             <th colspan="2" class="fw-bold sdsHeader">
                 Rev No/Repl, SDS Generated
             </th>
-            <td colspan="5">@HtmlRaw(Model.RevNo)</td>
+            <td colspan="5" class="text-align">@HtmlRaw(Model.RevNo)</td>
         </tr>
     </table>
 </div>

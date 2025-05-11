@@ -76,13 +76,13 @@ namespace SDS.Controllers
                     },
                     HeaderTemplate = @$"
                     <div style='width:100%;font-size: 11px; border-bottom: 1px solid #333; 
-                        padding-bottom: 3mm; line-height: 1.5; position: relative;'>
+                        padding-bottom: 6mm; line-height: 1.5; position: relative;'>
                         <div style='display: flex; justify-content: space-between; align-items: center; margin: 0 5mm;'>
                             <div>
                                 <strong style='font-size: 12px;'>PRO-OILS AROMATHERAPY</strong><br>
                                 MATERIAL SAFETY DATA SHEET
                             </div>
-                            <div style='position: absolute; width: 150px; height: 45px; overflow: hidden; left: 50%; top: 40%; transform: translate(-50%, -50%);'>
+                            <div style='position: absolute; width: 150px; height: 45px; overflow: hidden; left: 50%; top: 40%; transform: translate(-50%, -50%)  ;'>
                               <img src='{imgsrc}'
                                    style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;'/>
                             </div>
@@ -96,13 +96,14 @@ namespace SDS.Controllers
                         <div style='display:grid; grid-template-columns:1fr 1fr; gap:8mm; margin:0 5mm 2mm;'>
                             <div style='line-height:1.4;'>
                                 <strong style='display:block; margin-bottom:1mm;'>PRO-OILS AROMATHERAPY</strong>
-                                {vm.SupplierDetails}
-                                <div style='margin-top:1mm;'>Tel: {Functions.RemoveHtmlTags(vm.EmergencyPhone)}</div>
+                                 <div style='margin-top:1mm;'>Tel: {Functions.RemoveHtmlTags(vm.EmergencyPhone)}</div>
+                                <div >info@prooils.com.au</div>
+                                <div>Unit 6, 163 Newbridge Road,Chipping Norton NSW 2170 </div>                               
                             </div>
                             <div style='text-align:right; line-height:1.4;'>
                                 <strong style='display:block; margin-bottom:3mm;'>REVISION DETAILS</strong>
-                                Date: {vm.RevisionDate ?? DateTime.Now:yyyy-MM-dd}
-                                Rev No: {vm.RevNo}
+                                <div>Date: {vm.RevisionDate ?? DateTime.Now:yyyy-MM-dd}</div>
+                                <div>Rev No: {vm.RevNo}</div>
                             </div>
                         </div>
                         <div style='font-size:10px; font-weight:600; text-align:center; margin-top:2mm; padding-bottom:1mm;'>
