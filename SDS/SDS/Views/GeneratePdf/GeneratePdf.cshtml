@@ -300,7 +300,7 @@
                 <th colspan="6">Product Identifier</th>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold" style="width: 25%;">Product Name</th>
+                <th colspan="2" class="fw-bold" style="width: 15%;">Product Name</th>
                 <td colspan="5" class="text-align" style="width: 75%;">@HtmlRaw(Model.ProductName)</td>
             </tr>
             <tr>
@@ -319,19 +319,21 @@
                 @* <th class="fw-bold noRightB" >EINECS#</th> *@
                 @* <td colspan="1" class="text-align">@HtmlRaw(Model.EinecsNumber)</td> *@
 
-                <td colspan="7" style="padding:0px !important">
+             @*
+
+             *@   <td colspan="7" style="padding:0px !important">
                     @* <div class="container m-0"> *@
                         <div class="container row">
                             <div class="info-pair col-4 d-flex align-items-center">
-                                <div class="info-label pr-3">CAS#</div>
+                                <div class="info-label pr-3">CAS #</div>
                                 <div class="info-value">@Functions.RemoveHtmlTags(Model.CasNumber)</div>
                             </div>
                             <div class="info-pair col-4 d-flex">
-                                <div class="info-label pr-3">FEMA#</div>
+                                <div class="info-label pr-3" >FEMA #</div>
                                 <div class="info-value">@Functions.RemoveHtmlTags(Model.FemaNumber)</div>
                             </div>
                             <div class="info-pair col-4 d-flex">
-                                <div class="info-label pr-3">EINECS#</div>
+                                <div class="info-label pr-3">EINECS #</div>
                                 <div class="info-value">@Functions.RemoveHtmlTags(Model.EinecsNumber)</div>
                             </div>
                         </div>
@@ -362,7 +364,7 @@
             <!-- Section 1.4 -->
             <tr class="header-row">
                 <th class="section-number">1.4</th>
-                <th colspan="2" class="text-nowrap">Emergency Tel. No.</th>
+                <th colspan="2" class="text-nowrap" style="width:20%">Emergency Tel. No.</th>
                 <td colspan="4" style="padding:5px 10px !important" class="header-row-child text-align">@Functions.RemoveHtmlTags(Model.EmergencyPhone)</td>
             </tr>
         </tbody>
@@ -915,7 +917,7 @@
             <td class="section-number">11.1</td>
             <td colspan="6">Information on toxicological effects</td>
         </tr>
-        @Html.Raw(PrintSideBySide("Acute Toxicity", Model.AcuteToxicity, default, default, "colspan='1' class='text-align'"))
+        @Html.Raw(PrintSideBySide("Acute Toxicity", Model.AcuteToxicity, default, default, "colspan='1'"))
         @Html.Raw(PrintSideBySide("Skin corrosion/irritation", Model.SkinCorrosion, default, default, "colspan='1'"))
         @Html.Raw(PrintSideBySide("Eye Damage", Model.EyeDamage, default, default, "colspan='1'"))
         @Html.Raw(PrintSideBySide("Respiratory or skin sensitisation", Model.SkinSensitization, default, default, "colspan='1'"))
