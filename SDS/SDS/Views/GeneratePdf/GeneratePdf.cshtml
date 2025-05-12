@@ -1,4 +1,4 @@
-﻿﻿﻿@using System.Web
+﻿@using System.Web
 @using Microsoft.AspNetCore.Html
 @using System.Text.RegularExpressions
 @using SDS.Helper
@@ -963,7 +963,8 @@
         @Html.Raw(PrintOneLine(14.4, "Packing group", Model.PackingGroup))
         @Html.Raw(PrintOneLine(14.5, "Environmental hazards", Model.EnvironmentalHazards, false, "environmentalHazards", Model.ImagesByContentID))
         @Html.Raw(PrintOneLine(14.6, "Special precautions for user", Model.SpecialPrecautions))
-        @Html.Raw(PrintOneLine(14.7, $"Transport in bulk according to {Model.BulkTranprt}", Model.IbcCode))
+        @Html.Raw(PrintOneLine(14.7, $"Transport in bulk according to Annex II of MARPOL73/78 and the IBC code", Model.IbcCode)) 
+        @* @Html.Raw(PrintOneLine(14.7, $"Transport in bulk according to {Model.BulkTranprt}", Model.IbcCode)) *@
     </table>
 
     <!-- Section 15 Table -->
@@ -997,7 +998,7 @@
             <th colspan="2" class="fw-bold sdsHeader">
                 Revision Date
             </th>
-            <td colspan="5" class="text-align">@HtmlRaw(Model.RevisionDate.ToString())</td>
+            <td colspan="5" class="text-align">@HtmlRaw(Model.RevisionDate?.ToString("MM/dd/yyyy"))</td>
         </tr>
         <tr>
             <th colspan="2" class="fw-bold sdsHeader">
