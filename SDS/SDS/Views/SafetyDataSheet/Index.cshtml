@@ -34,7 +34,8 @@
                 <td>
                     <a asp-action="Create" asp-route-id="@product.ProductNo" class="btn btn-sm btn-primary me-1">Edit</a>
                     @* <a asp-action="Delete" asp-route-id="@product.ProductNo" class="btn btn-sm btn-danger me-1">Delete</a> *@
-                    <a asp-action="ExportPdf" asp-route-id="@product.ProductNo" class="btn btn-sm btn-warning">Generate
+                    <a asp-controller="GeneratePdf" asp-action="Generate" asp-route-id="@product.ProductNo"
+                        class="btn btn-sm btn-warning">Generate
                         PDF</a>
                 </td>
             </tr>
