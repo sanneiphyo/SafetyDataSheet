@@ -80,7 +80,7 @@
         string borderColor = bgBlue ? "#002060" : "white";
 
         string content = $@"<td class=""{bgClass}"" {fspan} style=""border-right-color: {borderColor} !important;""></td>
-                            <td class=""{bgClass} second-col"" {sspan}><b>{title}</b></td>";
+                            <td class=""{bgClass} second-col"" style=""text-align:left !important"" {sspan}><b>{title}</b></td>";
 
         content += $@"<td colspan='3'>{HtmlRaw(data)}</td>";
 
@@ -92,7 +92,7 @@
 
 <style>
     *{
-        text-align: justify;
+        @* text-align: justify; *@
     }
 
     .wrapper {
@@ -156,7 +156,8 @@
 
     td{
         padding: 10px !important;
-        text-justify: auto !important;
+        @* text-justify: auto !important; *@
+        text-align: justify !important;
     }
     
     td, th{
