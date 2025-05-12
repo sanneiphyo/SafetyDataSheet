@@ -73,21 +73,26 @@
         return new HtmlString(content);
     }
 
-    public static HtmlString PrintSideBySide(string title, string data, 
+    public static HtmlString PrintSideBySide(string title, string data,
         bool bgBlue = false, string fspan = "colspan='2'", string sspan = "colspan='2'")
     {
+        // Skip rendering completely if data is empty/null
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            return HtmlString.Empty;
+        }
+
         string bgClass = bgBlue ? "bgBlue" : "";
-        string borderColor = bgBlue ? "#002060" : "white";
-
-        string content = $@"<td class=""{bgClass}"" {fspan} style=""border-right-color: {borderColor} !important;""></td>
-                            <td class=""{bgClass} second-col"" style=""text-align:left !important"" {sspan}><b>{title}</b></td>";
-
-        content += $@"<td colspan='3'>{HtmlRaw(data)}</td>";
-
+        
+        // Remove the first empty cell
+        string content = $@"<td class=""{bgClass} second-col"" style=""text-align:left !important; width: 20%;"" {sspan}><b>{title}</b></td>";
+        content += $@"<td colspan='3' style=""width: 80%;"">{HtmlRaw(data)}</td>";
+        
         string element = $@"<tr class=""content-row"">{HtmlRaw(content)}</tr>";
-
         return new HtmlString(element);
     }
+
+
 }
 
 <style>
@@ -366,7 +371,7 @@
             <tr class="header-row">
                 <th class="section-number">1.4</th>
                 <th colspan="2" class="text-nowrap" style="width:20%">Emergency Tel. No.</th>
-                <td colspan="4" style="padding:5px 10px !important" class="header-row-child text-align">@Functions.RemoveHtmlTags(Model.EmergencyPhone)</td>
+                <td colspan="4" style="padding:5px 10px !important width:80%" class="header-row-child text-align">@Functions.RemoveHtmlTags(Model.EmergencyPhone)</td>
             </tr>
         </tbody>
     </table>
@@ -419,12 +424,12 @@
                 </td>
             </tr>
             <tr class="header-row">
-                <th colspan="2">Signal Word</th>
-                <td colspan="5" class="header-row-child text-align">@HtmlRaw(Model.SignalWord)</td>
+                <th colspan="2" style="width: 20%;">Signal Word</th>
+                <td colspan="5" class="header-row-child text-align" style="width: 80%;">@HtmlRaw(Model.SignalWord)</td>
             </tr>
             <tr class="header-row">
-                <th colspan="2">Contains</th>
-                <td colspan="5" class="header-row-child text-align">@HtmlRaw(Model.ContainsInfo)</td>
+                <th colspan="2" style="width: 20%;">Contains</th>
+                <td colspan="5" class="header-row-child text-align" style="width: 80%;">@HtmlRaw(Model.ContainsInfo)</td>
             </tr>
 
             <tr class="header-row">
@@ -476,20 +481,20 @@
                 <th colspan="6"> Description of first aid measures </th>
             </tr>
             <tr>
-                <th colspan="2" class="bgBlue">Inhalation</th>
-                <td colspan="5" class="text-align"> @HtmlRaw(Model.InhalationFirstAid)</td>
+                <th colspan="2" class="bgBlue" style="width:20%">Inhalation</th>
+                <td colspan="5" class="text-align" style="width:80%"> @HtmlRaw(Model.InhalationFirstAid)</td>
             </tr>
             <tr>
-                <th colspan="2" class="bgBlue"> Ingestion </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.IngestionFirstAid)</td>
+                <th colspan="2" class="bgBlue" style="width:20%"> Ingestion </th>
+                <td colspan="5" class="text-align" style="width:80%">@HtmlRaw(Model.IngestionFirstAid)</td>
             </tr>
             <tr>
-                <th colspan="2" class="bgBlue"> Skin Contact </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.SkinContactFirstAid)</td>
+                <th colspan="2" class="bgBlue" style="width:20%"> Skin Contact </th>
+                <td colspan="5" class="text-align" style="width:80%">@HtmlRaw(Model.SkinContactFirstAid)</td>
             </tr>
             <tr>
-                <th colspan="2" class="bgBlue">Eye Contact</th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.EyeContactFirstAid)</td>
+                <th colspan="2" class="bgBlue" style="width:20%">Eye Contact</th>
+                <td colspan="5" class="text-align" style="width:80%">@HtmlRaw(Model.EyeContactFirstAid)</td>
             </tr>
 
             <tr class="header-row">
@@ -683,64 +688,64 @@
                 </td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;" class="fw-bold sdsHeader">
                     Process Conditions
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.ProcessConditions)</td>
+                <td colspan="5" style="width: 80%;" class="text-align">@HtmlRaw(Model.ProcessConditions)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;" class="fw-bold sdsHeader">
                     Engineering Measures
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.EngineeringMeasures)</td>
+                <td colspan="5" style="width: 80%;" class="text-align">@HtmlRaw(Model.EngineeringMeasures)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;" class="fw-bold sdsHeader">
                     Respiratory Equipment
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.RespiratoryEquipment)</td>
+                <td colspan="5" style="width: 80%;" class="text-align">@HtmlRaw(Model.RespiratoryEquipment)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;" class="fw-bold sdsHeader">
                     Hand Protection
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.HandProtection)</td>
+                <td colspan="5" style="width: 80%;" class="text-align">@HtmlRaw(Model.HandProtection)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;" class="fw-bold sdsHeader">
                     Eye Protection
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.EyeProtection)</td>
+                <td colspan="5" style="width: 80%;" class="text-align">@HtmlRaw(Model.EyeProtection)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;" class="fw-bold sdsHeader">
                     Other Protection
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.OtherProtection)</td>
+                <td colspan="5" style="width: 80%;" class="text-align">@HtmlRaw(Model.OtherProtection)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;" class="fw-bold sdsHeader">
                     Hygiene Measures
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.HygieneMeasures)</td>
+                <td colspan="5" style="width: 80%;" class="text-align">@HtmlRaw(Model.HygieneMeasures)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;" class="fw-bold sdsHeader">
                     Personal Protection
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.PersonalProtection)</td>
+                <td colspan="5" style="width: 80%;" class="text-align">@HtmlRaw(Model.PersonalProtection)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;" class="fw-bold sdsHeader">
                     Skin Protection
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.SkinProtection)</td>
+                <td colspan="5" style="width: 80%;" class="text-align">@HtmlRaw(Model.SkinProtection)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;" class="fw-bold sdsHeader">
                     Environmental Exposure Control
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.EnvironmentalExposure)</td>
+                <td colspan="5" style="width: 80%;" class="text-align">@HtmlRaw(Model.EnvironmentalExposure)</td>
             </tr>
         </tbody>
     </table>
@@ -755,70 +760,70 @@
                 <th colspan="6">Information on basic physical and chemical properties</th>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Appearance
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.Appearance)</td>
+                <td colspan="5" style="width: 80%;"  class="text-align">@HtmlRaw(Model.Appearance)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Colour
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.Colour)</td>
+                <td colspan="5" style="width: 80%;"  class="text-align">@HtmlRaw(Model.Colour)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Odour
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.Odour)</td>
+                <td colspan="5" style="width: 80%;"   class="text-align">@HtmlRaw(Model.Odour)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Relative Density
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.RelativeDensity)</td>
+                <td colspan="5" style="width: 80%;"  class="text-align">@HtmlRaw(Model.RelativeDensity)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Flash Point (°C)
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.FlashPoint)</td>
+                <td colspan="5" style="width: 80%;"  class="text-align">@HtmlRaw(Model.FlashPoint)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Melting Point (°C)
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.MeltingPoint)</td>
+                <td colspan="5" style="width: 80%;"  class="text-align">@HtmlRaw(Model.MeltingPoint)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Refractive Index
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.RefractiveIndex)</td>
+                <td colspan="5" style="width: 80%;"  class="text-align">@HtmlRaw(Model.RefractiveIndex)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Boiling Point (°C)
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.BoilingPoint)</td>
+                <td colspan="5" style="width: 80%;"  class="text-align">@HtmlRaw(Model.BoilingPoint)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Vapour Pressure
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.VapourPressure)</td>
+                <td colspan="5" style="width: 80%;"  class="text-align">@HtmlRaw(Model.VapourPressure)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Solubility in Water @@ 20°C
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.SolubilityInWater)</td>
+                <td colspan="5" style="width: 80%;"  class="text-align">@HtmlRaw(Model.SolubilityInWater)</td>
             </tr>
             <tr>
-                <th colspan="2" class="fw-bold sdsHeader">
+                <th colspan="2" style="width: 20%;"  class="fw-bold sdsHeader">
                     Auto-ignition temperature (°C)
                 </th>
-                <td colspan="5" class="text-align">@HtmlRaw(Model.AutoIgnitionTemp)</td>
+                <td colspan="5" style="width: 80%;"  class="text-align">@HtmlRaw(Model.AutoIgnitionTemp)</td>
             </tr>
 
             <!-- Section 9.2 -->
