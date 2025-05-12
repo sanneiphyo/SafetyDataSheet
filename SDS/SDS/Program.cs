@@ -31,8 +31,20 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+// app.MapControllerRoute(
+//     name: "default",
+//     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Change the default route to SafetyDataSheet/Index
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=SafetyDataSheet}/{action=Index}/{id?}");
+
+// Add a redirect from the root to SafetyDataSheet/Index with page=1
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/SafetyDataSheet/Index?page=1");
+    return Task.CompletedTask;
+});
 
 app.Run();
