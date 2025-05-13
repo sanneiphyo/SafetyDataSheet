@@ -90,7 +90,7 @@ namespace SDS.Controllers
                             </div>
 
                             <!-- Centered Logo -->
-                            <div style='width: 150px; height: 45px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;'>
+                            <div style='width: 190px; height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;'>
                                 <img src='{imgsrc}' style='max-height: 100%; max-width: 100%; object-fit: contain;' />
                             </div>
 
